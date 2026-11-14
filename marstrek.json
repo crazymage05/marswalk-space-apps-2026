@@ -1,0 +1,67 @@
+{
+ "credit": "NASA/JPL-Caltech Mars Trek",
+ "link": "https://trek.nasa.gov/mars/",
+ "layers": {
+  "ctx": {
+   "id": "Gale_CTX_BlockAdj_dd",
+   "title": "MRO CTX, Gale Crater Mosaic",
+   "native_px": [
+    233,
+    291
+   ],
+   "m_per_px": 10.2,
+   "registration": {
+    "east_m": 900.0,
+    "south_m": 46.0,
+    "d_lon_deg": 0.01519,
+    "d_lat_deg": -0.00077,
+    "ncc": 0.587,
+    "ncc_second_peak": 0.205,
+    "note": "Trek CTX mosaic shows the twin's HiRISE terrain this far east/south of the nominal ROI lon/lat; the layer is shifted onto the twin by this translation"
+   },
+   "window": [
+    137.15,
+    137.65,
+    -5.05,
+    -4.55
+   ],
+   "px": 640
+  },
+  "mola": {
+   "id": "Mars_MGS_MOLA_ClrShade_merge_global_463m",
+   "window": [
+    136.6,
+    138.2,
+    -5.6,
+    -4.0
+   ],
+   "px": 512,
+   "title": "MOLA colour shaded relief, 463 m"
+  },
+  "geo": {
+   "id": "SIM3292_Global_Geology",
+   "window": [
+    136.6,
+    138.2,
+    -5.6,
+    -4.0
+   ],
+   "px": 512,
+   "title": "SIM 3292 global geologic map (Trek rendering of the USGS map)"
+  }
+ },
+ "roi": {
+  "minlat": -4.83,
+  "maxlat": -4.78,
+  "minlon": 137.37,
+  "maxlon": 137.41
+ },
+ "roi_in_trek_frame": {
+  "minlon": 137.38518768310547,
+  "maxlon": 137.42518768310546,
+  "minlat": -4.830768127441407,
+  "maxlat": -4.780768127441407
+ },
+ "deeplink": "https://trek.nasa.gov/mars/#v=0.1&x=137.4052&y=-4.8058&z=12&p=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A104905&d=&l=Gale_CTX_BlockAdj_dd%2Ctrue%2C1&b=mars",
+ "deeplink_note": "Trek permalink fragment: x=lon, y=lat, z=zoom, l=layerId,visible,opacity; checked with a browser load of this exact URL"
+}

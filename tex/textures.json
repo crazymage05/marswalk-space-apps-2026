@@ -1,0 +1,62 @@
+{
+ "note": "Curiosity NAV_LEFT_B greyscale, tinted warm #3a2416..#e8b98a; seamless via histogram-preserving blending (Heitz and Neyret 2018) on a periodic triangle grid (make_tex_hpb.py); normal = Depth Anything V2 Small + high-pass luminance, OpenGL (green up); tile_m is an estimate",
+ "textures": [
+  {
+   "type": "bedrock",
+   "source_images": [
+    "NLB_805867683EDR_F1172370NCAM00354M_"
+   ],
+   "source_crop_px": [
+    10,
+    30,
+    576,
+    576
+   ],
+   "tile_m": 2.0,
+   "size_px": 1024,
+   "files": [
+    "bedrock_albedo.jpg",
+    "bedrock_normal.jpg",
+    "bedrock_rough.jpg"
+   ]
+  },
+  {
+   "type": "sand",
+   "source_images": [
+    "NLB_805686697EDR_F1172166NCAM00353M_"
+   ],
+   "source_crop_px": [
+    10,
+    50,
+    450,
+    450
+   ],
+   "tile_m": 3.0,
+   "size_px": 1024,
+   "files": [
+    "sand_albedo.jpg",
+    "sand_normal.jpg",
+    "sand_rough.jpg"
+   ]
+  },
+  {
+   "type": "pebbly",
+   "source_images": [
+    "NLB_803646042EDR_F1170000NCAM00353M_"
+   ],
+   "source_crop_px": [
+    0,
+    20,
+    573,
+    573
+   ],
+   "tile_m": 2.0,
+   "size_px": 1024,
+   "files": [
+    "pebbly_albedo.jpg",
+    "pebbly_normal.jpg",
+    "pebbly_rough.jpg"
+   ]
+  }
+ ]
+}

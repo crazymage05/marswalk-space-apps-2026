@@ -1,0 +1,397 @@
+{
+ "version": 1,
+ "sol": 4600,
+ "site": "Gale crater walk corridor (twin walk.json)",
+ "what": "Cycles bake of sun visibility and sky+bounce lighting on the twin's 1 m corridor terrain with HiRISE boulders (rocks.json); see docs/bake_ground.md",
+ "texture": {
+  "size": [
+   2016,
+   2604
+  ],
+  "texels_per_cell": 2,
+  "texel_m": 0.505875,
+  "cell_m": 1.01175,
+  "corridor_cells": [
+   1008,
+   1302
+  ],
+  "rect_world": [
+   -843.7994999999999,
+   -897.4222499999998,
+   1019.8439999999999,
+   1317.2984999999999
+  ],
+  "rect_note": "world x, z, width, height of the texture rectangle (the cell-edge rectangle, same as aoRect in twin.html: c2w(-0.5,-0.5) and CW*CELL/4); u = (x - rect.x)/rect.w, v = (z - rect.z)/rect.h with flipY=false (image row 0 = north edge = smallest world z)",
+  "filter": "linear; texels are centred at rect + (k + 0.5) * texel_m"
+ },
+ "units": {
+  "lighting": "L = radiance leaving a WHITE diffuse surface (albedo 1) in Blender film units. Surface colour = albedo * (S/pi * max(n.l,0) * shadow + irr). S = sun_strength_blender of the slot (Blender sun strength, the film's value). Verified in Blender: sun direct bake = S * cos / pi (ratio 0.3183).",
+  "sun_az": "degrees clockwise from north; twin sunDir(lmst, 4600) evaluated in the page (tools/bake_poses.py), el in degrees",
+  "twin_sun_vector": "(cos el sin az, sin el, -cos el cos az) in twin world axes (x east, y up, z south)"
+ },
+ "encoding": {
+  "shadow": "RGBA PNG, 4 times per file; channel = index of the time in `times` mod 4 (A: 08,10,12,14, B: 16 in R); visibility = value/255 (sun disc fraction visible, penumbra from the real disc size, no cosine)",
+  "irr": "RGB JPEG; L = xmax * (value/255)^2 per channel; gamma 2 (sqrt) encoding; xmax per slot below",
+  "sky": "JSON {w,h,data}: data = base64(deflate(float16 LE RGB)); equirectangular 512x256, column u: azimuth = (u - 0.5) * 360 deg from north, + towards east; row v from the top: elevation = 90 - 180 v; radiance L in the same units, sun disc not included (use the directional light)"
+ },
+ "times": [
+  {
+   "lmst": 8,
+   "label": "08:00",
+   "sun_az_deg": 59.52849138418907,
+   "sun_el_deg": 29.638935777189946,
+   "ls_deg": 110.81890509022924,
+   "baked": true,
+   "shadow": {
+    "file": "shadow_A.png",
+    "channel": "r",
+    "mean_visibility": 0.9977904558181763
+   },
+   "irr": {
+    "file": "irr_0800.jpg",
+    "xmax": 0.27813720703125,
+    "mean_rgb": [
+     0.2508075535297394,
+     0.17092080414295197,
+     0.11833769083023071
+    ]
+   },
+   "sky": {
+    "file": "sky_0800.json",
+    "max": 0.44091796875,
+    "mean_rgb": [
+     0.22420817613601685,
+     0.1285403072834015,
+     0.07692286372184753
+    ]
+   },
+   "timing_s": {
+    "shadow_s": 50.4,
+    "irr_sky_s": 41.0,
+    "irr_sunbounce_s": 19.4,
+    "sky_s": 1.0,
+    "total_s": 112.3
+   },
+   "tau880": 0.4738149270939685,
+   "beam_transmission": 0.38361857638270186,
+   "sun_strength_blender": 2.493520746487562,
+   "sky_strength_blender": 0.7261905459440802
+  },
+  {
+   "lmst": 10,
+   "label": "10:00",
+   "sun_az_deg": 39.477634209882865,
+   "sun_el_deg": 52.85670640978021,
+   "ls_deg": 110.85806589804088,
+   "baked": true,
+   "shadow": {
+    "file": "shadow_A.png",
+    "channel": "g",
+    "mean_visibility": 0.9994431138038635
+   },
+   "irr": {
+    "file": "irr_1000.jpg",
+    "xmax": 0.34709471464157104,
+    "mean_rgb": [
+     0.29550549387931824,
+     0.19125869870185852,
+     0.13760657608509064
+    ]
+   },
+   "sky": {
+    "file": "sky_1000.json",
+    "max": 0.5166015625,
+    "mean_rgb": [
+     0.3320785164833069,
+     0.18792389333248138,
+     0.11047094315290451
+    ]
+   },
+   "timing_s": {
+    "shadow_s": 53.0,
+    "irr_sky_s": 40.7,
+    "irr_sunbounce_s": 18.3,
+    "sky_s": 0.8,
+    "total_s": 113.1
+   },
+   "tau880": 0.47363870345881603,
+   "beam_transmission": 0.5520141717158396,
+   "sun_strength_blender": 3.588092116152957,
+   "sky_strength_blender": 0.8507430143024924
+  },
+  {
+   "lmst": 12,
+   "label": "12:00",
+   "sun_az_deg": 349.8931270899083,
+   "sun_el_deg": 61.305786013460725,
+   "ls_deg": 110.89723014377068,
+   "baked": true,
+   "shadow": {
+    "file": "shadow_A.png",
+    "channel": "b",
+    "mean_visibility": 0.9994705319404602
+   },
+   "irr": {
+    "file": "irr_1200.jpg",
+    "xmax": 0.3699096441268921,
+    "mean_rgb": [
+     0.3263288736343384,
+     0.19969360530376434,
+     0.14320610463619232
+    ]
+   },
+   "sky": {
+    "file": "sky_1200.json",
+    "max": 0.529296875,
+    "mean_rgb": [
+     0.3595893383026123,
+     0.2043161392211914,
+     0.12194321304559708
+    ]
+   },
+   "timing_s": {
+    "shadow_s": 50.8,
+    "irr_sky_s": 41.9,
+    "irr_sunbounce_s": 20.6,
+    "sky_s": 1.1,
+    "total_s": 114.9
+   },
+   "tau880": 0.47346246435303196,
+   "beam_transmission": 0.5828961840305621,
+   "sun_strength_blender": 3.7888251961986534,
+   "sky_strength_blender": 0.8716582429462915
+  },
+  {
+   "lmst": 14,
+   "label": "14:00",
+   "sun_az_deg": 310.8894560874081,
+   "sun_el_deg": 45.50034567881708,
+   "ls_deg": 110.93639783114304,
+   "baked": true,
+   "shadow": {
+    "file": "shadow_A.png",
+    "channel": "a",
+    "mean_visibility": 0.9992601275444031
+   },
+   "irr": {
+    "file": "irr_1400.jpg",
+    "xmax": 0.33555907011032104,
+    "mean_rgb": [
+     0.2852418124675751,
+     0.18895237147808075,
+     0.1295517385005951
+    ]
+   },
+   "sky": {
+    "file": "sky_1400.json",
+    "max": 0.50048828125,
+    "mean_rgb": [
+     0.302402138710022,
+     0.17075791954994202,
+     0.09939607977867126
+    ]
+   },
+   "timing_s": {
+    "shadow_s": 51.0,
+    "irr_sky_s": 40.6,
+    "irr_sunbounce_s": 19.6,
+    "sky_s": 0.9,
+    "total_s": 112.5
+   },
+   "tau880": 0.47328620975985636,
+   "beam_transmission": 0.5150153835341028,
+   "sun_strength_blender": 3.347599992971668,
+   "sky_strength_blender": 0.8240976840687136
+  },
+  {
+   "lmst": 16,
+   "label": "16:00",
+   "sun_az_deg": 297.18775769488315,
+   "sun_el_deg": 20.43985575483006,
+   "ls_deg": 110.97556896324568,
+   "baked": true,
+   "shadow": {
+    "file": "shadow_B.png",
+    "channel": "r",
+    "mean_visibility": 0.9982991218566895
+   },
+   "irr": {
+    "file": "irr_1600.jpg",
+    "xmax": 0.2313537448644638,
+    "mean_rgb": [
+     0.2025783658027649,
+     0.13977591693401337,
+     0.09758883714675903
+    ]
+   },
+   "sky": {
+    "file": "sky_1600.json",
+    "max": 0.375,
+    "mean_rgb": [
+     0.1671018749475479,
+     0.09703870117664337,
+     0.059613652527332306
+    ]
+   },
+   "timing_s": {
+    "shadow_s": 50.9,
+    "irr_sky_s": 42.0,
+    "irr_sunbounce_s": 21.3,
+    "sky_s": 1.3,
+    "total_s": 116.0
+   },
+   "tau880": 0.4731099396653945,
+   "beam_transmission": 0.2580126803378898,
+   "sun_strength_blender": 1.677082422196284,
+   "sky_strength_blender": 0.617314680154374
+  }
+ ],
+ "poses": [
+  {
+   "name": "a_start",
+   "frac_of_route": 0.1,
+   "pos_world": [
+    -117.36299999999999,
+    -105.54640739450352,
+    -531.5097512604054
+   ],
+   "yaw_rad": 3.141592653589793,
+   "pitch_rad": -0.1,
+   "eye_height_m": 1.7,
+   "fov_deg_vertical": 60,
+   "aspect": 1.7777777777777777,
+   "convention": "twin walk camera: position = route point + (0, 1.7, 0); lookAt(p + (sin yaw cos pitch, sin pitch, -cos yaw cos pitch) * 10); yaw = atan2(dx, -dz) of the route 10 m ahead; world x east, y up, z south; THREE.PerspectiveCamera fov = vertical"
+  },
+  {
+   "name": "b_mid",
+   "frac_of_route": 0.5,
+   "pos_world": [
+    -380.41799999999995,
+    -81.77385196996285,
+    -211.2917403881779
+   ],
+   "yaw_rad": 3.119191970934783,
+   "pitch_rad": -0.1,
+   "eye_height_m": 1.7,
+   "fov_deg_vertical": 60,
+   "aspect": 1.7777777777777777,
+   "convention": "twin walk camera: position = route point + (0, 1.7, 0); lookAt(p + (sin yaw cos pitch, sin pitch, -cos yaw cos pitch) * 10); yaw = atan2(dx, -dz) of the route 10 m ahead; world x east, y up, z south; THREE.PerspectiveCamera fov = vertical"
+  },
+  {
+   "name": "c_late",
+   "frac_of_route": 0.85,
+   "pos_world": [
+    -575.6448678917728,
+    -61.0824360524288,
+    79.54088749481711
+   ],
+   "yaw_rad": -2.3658718004422576,
+   "pitch_rad": -0.1,
+   "eye_height_m": 1.7,
+   "fov_deg_vertical": 60,
+   "aspect": 1.7777777777777777,
+   "convention": "twin walk camera: position = route point + (0, 1.7, 0); lookAt(p + (sin yaw cos pitch, sin pitch, -cos yaw cos pitch) * 10); yaw = atan2(dx, -dz) of the route 10 m ahead; world x east, y up, z south; THREE.PerspectiveCamera fov = vertical"
+  }
+ ],
+ "reference_renders": {
+  "1000": [
+   "bake_ref_1000_a_start.png",
+   "bake_ref_1000_b_mid.png",
+   "bake_ref_1000_c_late.png"
+  ],
+  "1600": [
+   "bake_ref_1600_a_start.png",
+   "bake_ref_1600_b_mid.png",
+   "bake_ref_1600_c_late.png"
+  ]
+ },
+ "provenance": {
+  "script": "tools/bake_ground.py (Blender Cycles), tools/bake_pack.py, tools/bake_poses.py, tools/bake_ref.py",
+  "terrain": "demo/twin/walk.json + walk_z.json (heights minus the twin's zMean), 1 m corridor padded by one cell; 4 m context from data.json lowered 0.6 m and cut under the corridor; flat far plane",
+  "boulders": "112 from demo/twin/rocks.json: ellipsoids as in twin.html (d_m, h_m, same noise, spin and offset); pebbles and Navcam 3D scans are NOT baked",
+  "sky_sun_model": "the film's (tools/f1_blender_scene.py): sun strength 6.5*exp(-tau m), sky 0.9*0.65*(1-exp(-tau m))*sin(el)/(0.221/0.9), tau880 from tau_climatology.json at the slot's Ls, sun disc 0.5332/rAU deg, same sky gradient and blue aureole; no haze volume",
+  "ground_albedo_for_bounce": [
+   0.28,
+   0.17,
+   0.1
+  ],
+  "rock_albedo": [
+   0.2,
+   0.135,
+   0.095
+  ],
+  "far_albedo": [
+   0.2,
+   0.1,
+   0.05
+  ],
+  "bounces": "diffuse 3",
+  "timings_s": {
+   "1000": {
+    "texel_px": [
+     2016,
+     2604
+    ],
+    "spp_shadow": 512,
+    "spp_irr": 512,
+    "shadow_s": 52.9854691028595,
+    "irr_sky_s": 40.73672103881836,
+    "irr_sunbounce_s": 18.303749322891235,
+    "sky_s": 0.7998292446136475,
+    "total_s": 113.12355375289917
+   },
+   "1600": {
+    "texel_px": [
+     2016,
+     2604
+    ],
+    "spp_shadow": 512,
+    "spp_irr": 512,
+    "shadow_s": 50.894174098968506,
+    "irr_sky_s": 42.02778458595276,
+    "irr_sunbounce_s": 21.26181960105896,
+    "sky_s": 1.256627082824707,
+    "total_s": 116.03753709793091
+   },
+   "0800": {
+    "texel_px": [
+     2016,
+     2604
+    ],
+    "spp_shadow": 512,
+    "spp_irr": 512,
+    "shadow_s": 50.371405601501465,
+    "irr_sky_s": 41.009604692459106,
+    "irr_sunbounce_s": 19.380460023880005,
+    "sky_s": 1.0231614112854004,
+    "total_s": 112.254549741745
+   },
+   "1200": {
+    "texel_px": [
+     2016,
+     2604
+    ],
+    "spp_shadow": 512,
+    "spp_irr": 512,
+    "shadow_s": 50.816654682159424,
+    "irr_sky_s": 41.86597514152527,
+    "irr_sunbounce_s": 20.64168381690979,
+    "sky_s": 1.0619280338287354,
+    "total_s": 114.86541485786438
+   },
+   "1400": {
+    "texel_px": [
+     2016,
+     2604
+    ],
+    "spp_shadow": 512,
+    "spp_irr": 512,
+    "shadow_s": 50.99753260612488,
+    "irr_sky_s": 40.586849212646484,
+    "irr_sunbounce_s": 19.58635377883911,
+    "sky_s": 0.9434542655944824,
+    "total_s": 112.52266764640808
+   }
+  }
+ }
+}

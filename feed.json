@@ -1,0 +1,1455 @@
+{
+ "generated_utc": "2026-11-13T17:30:53Z",
+ "sources": [
+  {
+   "newest_observed_utc": "2026-11-12T19:39:22Z",
+   "newest_available_utc": "2026-11-13T10:01:14Z",
+   "last_ingested_utc": "2026-11-13T07:00:17Z",
+   "id": "msl_raw",
+   "name": "Curiosity raw images",
+   "mission": "MSL Curiosity",
+   "instrument": "Navcam (NAV_LEFT_B / NAV_RIGHT_B) + all cameras for latency",
+   "kind": "images",
+   "typical_latency": "about 16 h from exposure to public raw image (median of the newest 100 images, measured each poll)",
+   "last_checked_utc": "2026-11-13T17:30:34Z",
+   "items_new": 41,
+   "status": "ok",
+   "note": "41 new images, newest sol 5072 (site 125 drive 2274); 0 new Navcam frames inside the twin area (0 sent to the twin), 0 Navcam outside. Median exposure-to-public latency 16.5 h over the newest 100 images (min 13.3, max 39.0).",
+   "extra": {
+    "latency_median_h": 16.49,
+    "latency_n": 100,
+    "navcam_inside_twin": 0,
+    "navcam_outside_twin": 0,
+    "newest_sol": 5072
+   },
+   "records_new": 0
+  },
+  {
+   "newest_observed_utc": "2026-03-21T19:22:53Z",
+   "newest_available_utc": "2026-07-29T20:43:00Z",
+   "last_ingested_utc": null,
+   "id": "pds_release",
+   "name": "PDS release check",
+   "mission": "MSL Curiosity",
+   "instrument": "RAD, REMS, Navcam XYZ (archive volumes)",
+   "kind": "archive",
+   "typical_latency": "about 4 months after the last sol of a release; three releases a year (March, August, December) per the PDS Geosciences MSL page",
+   "last_checked_utc": "2026-11-13T17:30:38Z",
+   "items_new": 0,
+   "status": "ok",
+   "note": "Archive newest sol: RAD 4843, REMS 4843, Navcam 4843/4843 (MSL Release 42, sols 4710-4843, August 3, 2026). Twin has RAD to sol 4801, REMS weather to 4850, Navcam XYZ to 4841, photos to 4687. Last sol of a release to public release (PDS Geosciences log; sol dates from the twin's REMS dates, +-1 day): median 131 days (R37=131, R38=132, R39=131, R40=130, R41=132, R42=134). Next scheduled: release 43, sols 4844-4967, Dec 7, 2026. No records: sols newer than the twin's data are outside the 2025 campaign it covers.",
+   "extra": {
+    "rad_last_sol": 4843,
+    "rems_last_sol": 4843,
+    "navcam_last_sol": [
+     4843,
+     4843
+    ],
+    "twin_sols": {
+     "rad": 4801,
+     "weather": 4850,
+     "photos": 4687,
+     "navcam_xyz": 4841
+    },
+    "lag_days_median": 131.5,
+    "lag_days_by_release": [
+     [
+      37,
+      131
+     ],
+     [
+      38,
+      132
+     ],
+     [
+      39,
+      131
+     ],
+     [
+      40,
+      130
+     ],
+     [
+      41,
+      132
+     ],
+     [
+      42,
+      134
+     ]
+    ],
+    "next_release": [
+     43,
+     4844,
+     4967,
+     "Dec 7, 2026"
+    ]
+   },
+   "records_new": 0
+  },
+  {
+   "newest_observed_utc": "2026-08-25T00:00:00Z",
+   "newest_available_utc": "2026-11-13T07:00:33Z",
+   "last_ingested_utc": "2026-11-13T07:00:33Z",
+   "id": "rems_weather",
+   "name": "REMS daily weather",
+   "mission": "MSL Curiosity",
+   "instrument": "REMS (air temperature, pressure)",
+   "kind": "weather",
+   "typical_latency": "weeks to months: the newest sol on the NASA weather API trails today by the figure measured on each poll",
+   "last_checked_utc": "2026-11-13T17:30:49Z",
+   "items_new": 0,
+   "status": "no_new",
+   "note": "Newest sol on the API: 4995 (2026-08-25), 80 days behind today (lower bound on latency; no publication timestamp exists). Twin weather table ends at sol 4850; 40 later sols sent as records (sols 4956-4995).",
+   "extra": {
+    "api_lag_days": 80,
+    "twin_last_sol": 4850
+   },
+   "records_new": 0
+  },
+  {
+   "newest_observed_utc": "2026-11-09T18:15:00Z",
+   "newest_available_utc": "2026-11-09T19:59:00Z",
+   "last_ingested_utc": "2026-11-13T07:04:25Z",
+   "id": "space_weather",
+   "name": "NASA DONKI space weather (WSA-ENLIL Mars impacts, SEP events)",
+   "mission": "heliophysics (CCMC)",
+   "instrument": "WSA-ENLIL+Cone model; SEP instruments listed per record",
+   "kind": "hazard",
+   "typical_latency": "hours (model runs follow a CME by about 4 to 24 h)",
+   "last_checked_utc": "2026-11-13T17:30:50Z",
+   "items_new": 9,
+   "status": "ok",
+   "note": "9 WSA-ENLIL Mars arrival record(s), 0 SEP record(s), last 30 days. DONKI states no uncertainty for Mars arrival times.",
+   "records_new": 0
+  },
+  {
+   "newest_observed_utc": "2026-11-12T12:00:00Z",
+   "newest_available_utc": "2026-11-13T17:30:26Z",
+   "last_ingested_utc": null,
+   "id": "gibs_dsn",
+   "name": "Earth side: DSN ground stations (NASA Worldview/GIBS)",
+   "mission": "NASA Deep Space Network / Earth observation",
+   "instrument": "VIIRS or MODIS true colour + IMERG precipitation rate (NASA GIBS)",
+   "kind": "images",
+   "typical_latency": "true colour a few hours after overpass; IMERG precipitation a few hours (GIBS 'best' layers); fetched once per poll",
+   "last_checked_utc": "2026-11-13T17:30:14Z",
+   "items_new": 3,
+   "status": "ok",
+   "note": "Goldstone, California: VIIRS_NOAA21 2026-11-12, rain pixels 0.0%; Madrid (Robledo), Spain: VIIRS_NOAA21 2026-11-12, rain pixels 29.5%; Canberra (Tidbinbilla), Australia: VIIRS_NOAA21 2026-11-12, rain pixels 4.0%. Context imagery only; no link margins are computed.",
+   "extra": {
+    "sites": [
+     {
+      "key": "goldstone",
+      "name": "Goldstone, California",
+      "lat": 35.2814,
+      "lon": -116.7789,
+      "date": "2026-11-12",
+      "layer": "VIIRS_NOAA21_CorrectedReflectance_TrueColor",
+      "layers": [
+       "VIIRS_NOAA21_CorrectedReflectance_TrueColor"
+      ],
+      "precip_layer": "IMERG_Precipitation_Rate",
+      "bbox": [
+       -119.779,
+       33.281,
+       -113.779,
+       37.281
+      ],
+      "image": "feed/gibs/goldstone.jpg",
+      "coverage": 1.0,
+      "rain_share": 0.0,
+      "bright_share": 0.018,
+      "worldview": "https://worldview.earthdata.nasa.gov/?v=-119.779,33.281,-113.779,37.281&l=IMERG_Precipitation_Rate,VIIRS_NOAA21_CorrectedReflectance_TrueColor,Coastlines_15m&t=2026-11-12-T12%3A00%3A00Z"
+     },
+     {
+      "key": "madrid",
+      "name": "Madrid (Robledo), Spain",
+      "lat": 40.4292,
+      "lon": -4.2497,
+      "date": "2026-11-12",
+      "layer": "VIIRS_NOAA21_CorrectedReflectance_TrueColor",
+      "layers": [
+       "VIIRS_NOAA21_CorrectedReflectance_TrueColor"
+      ],
+      "precip_layer": "IMERG_Precipitation_Rate",
+      "bbox": [
+       -7.25,
+       38.429,
+       -1.25,
+       42.429
+      ],
+      "image": "feed/gibs/madrid.jpg",
+      "coverage": 0.998,
+      "rain_share": 0.2948,
+      "bright_share": 0.224,
+      "worldview": "https://worldview.earthdata.nasa.gov/?v=-7.25,38.429,-1.25,42.429&l=IMERG_Precipitation_Rate,VIIRS_NOAA21_CorrectedReflectance_TrueColor,Coastlines_15m&t=2026-11-12-T12%3A00%3A00Z"
+     },
+     {
+      "key": "canberra",
+      "name": "Canberra (Tidbinbilla), Australia",
+      "lat": -35.4017,
+      "lon": 148.9822,
+      "date": "2026-11-12",
+      "layer": "VIIRS_NOAA21_CorrectedReflectance_TrueColor",
+      "layers": [
+       "VIIRS_NOAA21_CorrectedReflectance_TrueColor"
+      ],
+      "precip_layer": "IMERG_Precipitation_Rate",
+      "bbox": [
+       145.982,
+       -37.402,
+       151.982,
+       -33.402
+      ],
+      "image": "feed/gibs/canberra.jpg",
+      "coverage": 1.0,
+      "rain_share": 0.0398,
+      "bright_share": 0.067,
+      "worldview": "https://worldview.earthdata.nasa.gov/?v=145.982,-37.402,151.982,-33.402&l=IMERG_Precipitation_Rate,VIIRS_NOAA21_CorrectedReflectance_TrueColor,Coastlines_15m&t=2026-11-12-T12%3A00%3A00Z"
+     }
+    ],
+    "note": "Imagery is context for the Earth end of the link; MARSWALK does not model link margins.",
+    "site_coordinates_source": "JPL DSN Radio Astronomy User Guide 2021, Table 1.1"
+   },
+   "records_new": 0
+  },
+  {
+   "newest_observed_utc": "2026-11-06T12:16:25Z",
+   "newest_available_utc": "2026-11-06T15:59:53Z",
+   "last_ingested_utc": null,
+   "id": "m2020_raw",
+   "name": "Perseverance raw images",
+   "mission": "Mars 2020 Perseverance (Jezero)",
+   "instrument": "Navcam (NAVCAM_LEFT / NAVCAM_RIGHT), Mastcam-Z (MCZ_LEFT / MCZ_RIGHT) + all cameras for latency",
+   "kind": "images",
+   "typical_latency": "a few hours to several days from exposure to public raw image (median of the newest 100 images, measured each poll)",
+   "last_checked_utc": "2026-11-13T17:30:26Z",
+   "items_new": 0,
+   "status": "no_new",
+   "note": "0 new images, newest sol 2031 (SUPERCAM_RMI, taken 2026-11-06T12:16Z). Median exposure-to-public latency 106.1 h over the newest 100 images (min 3.6, max 114.4). 6 Navcam / Mastcam-Z thumbnails saved.",
+   "extra": {
+    "latency_median_h": 106.08,
+    "latency_n": 100,
+    "latency_min_h": 3.63,
+    "latency_max_h": 114.44,
+    "newest_sol": 2031,
+    "thumbs": [
+     {
+      "imageid": "NLG_2024_0846620381_164ECM_N0930000NCAM00518_00_2I3J",
+      "sol": 2024,
+      "camera": "NAVCAM_LEFT",
+      "taken_utc": "2026-10-30T08:44:57Z",
+      "received_utc": "2026-10-30T11:56:00Z",
+      "latency_h": 3.18,
+      "credit": "NASA/JPL-Caltech",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NLG_2024_0846620381_164ECM_N0930000NCAM00518_00_2I3J",
+      "file": "feed/m2020/m2020_NLG_2024_0846620381_164ECM_N0930000NCAM0.jpg"
+     },
+     {
+      "imageid": "NRF_2023_0846549056_005ECM_N0930000NCAM00709_01_095J",
+      "sol": 2023,
+      "camera": "NAVCAM_RIGHT",
+      "taken_utc": "2026-10-29T12:56:14Z",
+      "received_utc": "2026-10-29T15:53:06Z",
+      "latency_h": 2.95,
+      "credit": "NASA/JPL-Caltech",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NRF_2023_0846549056_005ECM_N0930000NCAM00709_01_095J",
+      "file": "feed/m2020/m2020_NRF_2023_0846549056_005ECM_N0930000NCAM0.jpg"
+     },
+     {
+      "imageid": "ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "sol": 2024,
+      "camera": "MCZ_LEFT",
+      "taken_utc": "2026-10-30T09:21:53Z",
+      "received_utc": "2026-11-04T03:39:55Z",
+      "latency_h": 114.3,
+      "credit": "NASA/JPL-Caltech/ASU",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "file": "feed/m2020/m2020_ZL0_2024_0846622583_145EBY_N0930000ZCAM1.jpg"
+     },
+     {
+      "imageid": "ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "sol": 2024,
+      "camera": "MCZ_RIGHT",
+      "taken_utc": "2026-10-30T09:21:51Z",
+      "received_utc": "2026-11-03T19:21:07Z",
+      "latency_h": 105.99,
+      "credit": "NASA/JPL-Caltech/ASU",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "file": "feed/m2020/m2020_ZR0_2024_0846622583_145EBY_N0930000ZCAM1.jpg"
+     },
+     {
+      "imageid": "NLG_2024_0846620356_066ECM_N0930000NCAM00518_00_2I3J",
+      "sol": 2024,
+      "camera": "NAVCAM_LEFT",
+      "taken_utc": "2026-10-30T08:44:32Z",
+      "received_utc": "2026-10-30T11:56:00Z",
+      "latency_h": 3.19,
+      "credit": "NASA/JPL-Caltech",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NLG_2024_0846620356_066ECM_N0930000NCAM00518_00_2I3J",
+      "file": "feed/m2020/m2020_NLG_2024_0846620356_066ECM_N0930000NCAM0.jpg"
+     },
+     {
+      "imageid": "NLF_2023_0846549056_005ECM_N0930000NCAM00709_08_095J",
+      "sol": 2023,
+      "camera": "NAVCAM_LEFT",
+      "taken_utc": "2026-10-29T12:56:14Z",
+      "received_utc": "2026-10-29T15:53:06Z",
+      "latency_h": 2.95,
+      "credit": "NASA/JPL-Caltech",
+      "page": "https://mars.nasa.gov/mars2020/multimedia/raw-images/NLF_2023_0846549056_005ECM_N0930000NCAM00709_08_095J",
+      "file": "feed/m2020/m2020_NLF_2023_0846549056_005ECM_N0930000NCAM0.jpg"
+     }
+    ],
+    "credit": "NASA/JPL-Caltech",
+    "gallery": "https://mars.nasa.gov/mars2020/multimedia/raw-images/"
+   },
+   "records_new": 0
+  }
+ ],
+ "records": [
+  {
+   "id": "weather-msl-4956",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-16T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4956,
+   "label": "measured",
+   "weather": {
+    "min_C": -66.0,
+    "max_C": -11.0,
+    "pressure_Pa": 782.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4957",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-17T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4957,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -16.0,
+    "pressure_Pa": 792.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4958",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-18T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4958,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -12.0,
+    "pressure_Pa": 787.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4959",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-19T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4959,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -7.0,
+    "pressure_Pa": 788.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4960",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-20T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4960,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -9.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4961",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-21T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4961,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -10.0,
+    "pressure_Pa": 793.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4962",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-22T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4962,
+   "label": "measured",
+   "weather": {
+    "min_C": -74.0,
+    "max_C": -7.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4963",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-23T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4963,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -2.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4964",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-24T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4964,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -3.0,
+    "pressure_Pa": 784.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4965",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-25T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4965,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": 0.0,
+    "pressure_Pa": 785.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4966",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-26T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4966,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -3.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4967",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-27T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4967,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -3.0,
+    "pressure_Pa": 784.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4968",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-28T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4968,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -3.0,
+    "pressure_Pa": 791.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4969",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-29T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4969,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -4.0,
+    "pressure_Pa": 783.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4970",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-30T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4970,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -5.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4971",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-07-31T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4971,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -4.0,
+    "pressure_Pa": 782.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4972",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-01T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4972,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -6.0,
+    "pressure_Pa": 784.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4973",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-02T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4973,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -3.0,
+    "pressure_Pa": 784.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4974",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-03T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4974,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -8.0,
+    "pressure_Pa": 783.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4975",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-04T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4975,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -6.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4976",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-05T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4976,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -5.0,
+    "pressure_Pa": 781.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4977",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-06T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4977,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -4.0,
+    "pressure_Pa": 786.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4978",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-07T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4978,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -7.0,
+    "pressure_Pa": 781.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4979",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-08T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4979,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -7.0,
+    "pressure_Pa": 785.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4980",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-09T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4980,
+   "label": "measured",
+   "weather": {
+    "min_C": -78.0,
+    "max_C": -7.0,
+    "pressure_Pa": 781.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4981",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-11T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4981,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -8.0,
+    "pressure_Pa": 783.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4982",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-12T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4982,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -6.0,
+    "pressure_Pa": 780.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4983",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-13T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4983,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -4.0,
+    "pressure_Pa": 782.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4984",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-14T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4984,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -6.0,
+    "pressure_Pa": 780.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4985",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-15T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4985,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -6.0,
+    "pressure_Pa": 781.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4986",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-16T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4986,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -9.0,
+    "pressure_Pa": 782.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4987",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-17T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4987,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -9.0,
+    "pressure_Pa": 781.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4988",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-18T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4988,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -10.0,
+    "pressure_Pa": 780.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4989",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-19T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4989,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -6.0,
+    "pressure_Pa": 778.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4990",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-20T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4990,
+   "label": "measured",
+   "weather": {
+    "min_C": -72.0,
+    "max_C": -8.0,
+    "pressure_Pa": 779.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4991",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-21T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4991,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -11.0,
+    "pressure_Pa": 779.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4992",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-22T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4992,
+   "label": "measured",
+   "weather": {
+    "min_C": -69.0,
+    "max_C": -6.0,
+    "pressure_Pa": 780.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4993",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-23T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4993,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -6.0,
+    "pressure_Pa": 780.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4994",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-24T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4994,
+   "label": "measured",
+   "weather": {
+    "min_C": -70.0,
+    "max_C": -7.0,
+    "pressure_Pa": 777.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "weather-msl-4995",
+   "type": "weather",
+   "source": "rems_weather",
+   "observed_utc": "2026-08-25T00:00:00Z",
+   "available_utc": "2026-11-13T07:00:33Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 4995,
+   "label": "measured",
+   "weather": {
+    "min_C": -71.0,
+    "max_C": -5.0,
+    "pressure_Pa": 777.0
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+    "sha256": null,
+    "method": "NASA REMS daily summary; observed_utc is the terrestrial date at 00:00 (day-level only)"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-23T04:18:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-23T04:18:00Z",
+   "available_utc": "2026-10-23T12:09:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5056,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-10-27T12:00:00Z",
+    "end_utc": "2026-10-27T12:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-10-27T12:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 597.0 km/s, longitude 71.0 deg at 21.5 Rs. 1 run(s); latest run 2026-10-23T12:09Z. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49216/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-25T19:24:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-25T19:24:00Z",
+   "available_utc": "2026-10-25T21:45:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5061,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-11-01T01:00:00Z",
+    "end_utc": "2026-11-01T01:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-11-01T01:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 275.0 km/s, longitude 60.0 deg at 21.5 Rs. 1 run(s); latest run 2026-10-25T21:45Z. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49248/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-26T01:26:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-26T01:26:00Z",
+   "available_utc": "2026-10-26T20:04:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5061,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-11-01T02:00:00Z",
+    "end_utc": "2026-11-01T02:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-11-01T02:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 285.0 km/s, longitude 75.0 deg at 21.5 Rs. 1 run(s); latest run 2026-10-26T20:04Z. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49274/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-26T09:00:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-26T09:00:00Z",
+   "available_utc": "2026-10-26T15:56:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5060,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-10-30T18:00:00Z",
+    "end_utc": "2026-10-30T18:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-10-30T18:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 873.0 km/s, longitude 43.0 deg at 21.5 Rs. 2 run(s); latest run 2026-10-26T15:56Z; run spread 6.0 h. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49259/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-26T09:48:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-26T09:48:00Z",
+   "available_utc": "2026-10-26T13:10:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5060,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-10-30T18:00:00Z",
+    "end_utc": "2026-10-30T18:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-10-30T18:00Z UTC (glancing blow). DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 681.0 km/s, longitude 48.0 deg at 21.5 Rs. 2 run(s); latest run 2026-10-26T13:10Z; run spread 0.0 h. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49252/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-26T18:48:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-26T18:48:00Z",
+   "available_utc": "2026-10-26T23:09:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5060,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-10-31T11:00:00Z",
+    "end_utc": "2026-10-31T11:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-10-31T11:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 616.0 km/s, longitude 77.0 deg at 21.5 Rs. 2 run(s); latest run 2026-10-26T23:09Z; run spread 0.0 h. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49280/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-10-29T10:36:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-10-29T10:36:00Z",
+   "available_utc": "2026-10-30T13:36:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5064,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-11-04T08:00:00Z",
+    "end_utc": "2026-11-04T08:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-11-04T08:00Z UTC. DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 287.0 km/s, longitude 56.0 deg at 21.5 Rs. 1 run(s); latest run 2026-10-30T13:36Z. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49326/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-11-01T19:00:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-11-01T19:00:00Z",
+   "available_utc": "2026-11-01T21:43:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5067,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-11-07T06:00:00Z",
+    "end_utc": "2026-11-07T06:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-11-07T06:00Z UTC (glancing blow). DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 357.0 km/s, longitude 31.0 deg at 21.5 Rs. 1 run(s); latest run 2026-11-01T21:43Z. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49360/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "donki-enlil-mars-2026-11-09T18:15:00-CME-001",
+   "type": "hazard",
+   "source": "space_weather",
+   "observed_utc": "2026-11-09T18:15:00Z",
+   "available_utc": "2026-11-09T19:59:00Z",
+   "ingested_utc": "2026-11-13T17:30:50Z",
+   "sol": 5073,
+   "label": "modelled",
+   "hazard": {
+    "kind": "cme",
+    "start_utc": "2026-11-13T12:00:00Z",
+    "end_utc": "2026-11-13T12:00:00Z",
+    "center": null,
+    "radius_km": null,
+    "affects_site": true,
+    "note": "WSA-ENLIL+Cone predicts this CME reaches Mars at 2026-11-13T12:00Z UTC (glancing blow). DONKI states no uncertainty for this time; published arrival-time errors at Mars are many hours (SD 17-20 h, data/processed/hazards/cme_skill.json). CME speed 726.0 km/s, longitude 65.0 deg at 21.5 Rs. 2 run(s); latest run 2026-11-09T19:59Z; run spread 0.0 h. A Mars-wide arrival, not specific to Gale."
+   },
+   "provenance": {
+    "url": "https://ccmc.gsfc.nasa.gov/DONKI/view/WSA-ENLIL/49473/-1",
+    "sha256": "d492f28e31f33316c5ebb6d57e14170e9a8dcc882af4b66fc0a5d35562418757",
+    "method": "DONKI WSAEnlilSimulations impactList location=Mars, latest run per CME"
+   }
+  },
+  {
+   "id": "photo-msl-NLB_847590978EDR_D1252124TRAV01529M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-10T15:09:18Z",
+   "available_utc": "2026-11-10T22:12:00Z",
+   "ingested_utc": "2026-11-13T07:00:15Z",
+   "sol": 5070,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NLB_847590978EDR_D1252124TRAV01529M_.jpg",
+    "x": 254.59,
+    "y": 671.87,
+    "camera": "NAV_LEFT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05070/opgs/edr/ncam/NLB_847590978EDR_D1252124TRAV01529M_.JPG",
+    "sha256": "4535fea6bbf293d6ccfa179c1e30867ebb4903f06d69a9f416d3a5ed6a84e744",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2124, placed on the twin grid with the HiRISE coregistration"
+   }
+  },
+  {
+   "id": "photo-msl-NLB_847592296EDR_D1252244TRAV01529M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-10T15:31:16Z",
+   "available_utc": "2026-11-10T22:12:07Z",
+   "ingested_utc": "2026-11-13T07:00:11Z",
+   "sol": 5070,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NLB_847592296EDR_D1252244TRAV01529M_.jpg",
+    "x": 254.59,
+    "y": 671.87,
+    "camera": "NAV_LEFT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05070/opgs/edr/ncam/NLB_847592296EDR_D1252244TRAV01529M_.JPG",
+    "sha256": "b6e4b051109a2a4c7e346d78e93a5661e7551dfac16a2efc9a37d3331cd6a7e0",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2244, placed on the twin grid with the HiRISE coregistration"
+   }
+  },
+  {
+   "id": "photo-msl-NLB_847593665EDR_F1252274NCAM00353M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-10T15:54:05Z",
+   "available_utc": "2026-11-11T03:42:11Z",
+   "ingested_utc": "2026-11-13T07:00:10Z",
+   "sol": 5070,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NLB_847593665EDR_F1252274NCAM00353M_.jpg",
+    "x": 257.79,
+    "y": 678.01,
+    "camera": "NAV_LEFT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05070/opgs/edr/ncam/NLB_847593665EDR_F1252274NCAM00353M_.JPG",
+    "sha256": "b8271f57d4e4c7a45bcb5e10054342158aa4f7110f2e656b83445b9b48d2ef37",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2274, placed on the twin grid with the HiRISE coregistration"
+   }
+  },
+  {
+   "id": "photo-msl-NRB_847663792EDR_S1252274NCAM00594M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-11T11:22:52Z",
+   "available_utc": "2026-11-11T21:14:49Z",
+   "ingested_utc": "2026-11-13T07:00:17Z",
+   "sol": 5071,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NRB_847663792EDR_S1252274NCAM00594M_.jpg",
+    "x": 257.79,
+    "y": 678.01,
+    "camera": "NAV_RIGHT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05071/opgs/edr/ncam/NRB_847663792EDR_S1252274NCAM00594M_.JPG",
+    "sha256": "974581fb66c273793d0fdce187e691ec28c862c88240c7364cada1fa4a256e48",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2274, placed on the twin grid with the HiRISE coregistration"
+   }
+  },
+  {
+   "id": "photo-msl-NRB_847754644EDR_S1252274NCAM00593M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-12T12:37:05Z",
+   "available_utc": "2026-11-13T05:07:10Z",
+   "ingested_utc": "2026-11-13T07:00:16Z",
+   "sol": 5072,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NRB_847754644EDR_S1252274NCAM00593M_.jpg",
+    "x": 257.79,
+    "y": 678.01,
+    "camera": "NAV_RIGHT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05072/opgs/edr/ncam/NRB_847754644EDR_S1252274NCAM00593M_.JPG",
+    "sha256": "89c8b7cbd8a92053fd2fc85155f9dc53f31ad70472c8b1bf24b5bb6eb4a318ec",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2274, placed on the twin grid with the HiRISE coregistration"
+   }
+  },
+  {
+   "id": "photo-msl-NLB_847754800EDR_S1252274NCAM00593M_",
+   "type": "photo",
+   "source": "msl_raw",
+   "observed_utc": "2026-11-12T12:39:41Z",
+   "available_utc": "2026-11-13T05:07:16Z",
+   "ingested_utc": "2026-11-13T07:00:09Z",
+   "sol": 5072,
+   "label": "measured",
+   "photo": {
+    "file": "feed/NLB_847754800EDR_S1252274NCAM00593M_.jpg",
+    "x": 257.79,
+    "y": 678.01,
+    "camera": "NAV_LEFT_B"
+   },
+   "provenance": {
+    "url": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05072/opgs/edr/ncam/NLB_847754800EDR_S1252274NCAM00593M_.JPG",
+    "sha256": "f45b55425ba36b5d0d41e26565e7fe61c2e88a17a015f0e417a0c3ece6db07d7",
+    "method": "NASA raw-image API; position = MMGIS waypoint for site 125 drive 2274, placed on the twin grid with the HiRISE coregistration"
+   }
+  }
+ ]
+}
