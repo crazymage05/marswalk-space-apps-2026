@@ -6,17 +6,13 @@
 <link rel="icon" href="data:,">
 <title>MARSWALK</title>
 <meta name="description" content="MARSWALK: a Mars EVA digital twin of Curiosity's 2025 boxwork campaign at Gale Crater.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 <style>
-:root {
-  --ground: #16110d; --panel: #1f1813; --line: #3b2e24; --fg: #f1e7da; --muted: #b3a190;
-  --dust: #e0a463; --haze: #c58e64; --route: #6fd8ea; --hazard: #e5563c; --ok: #9fd27a;
-  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
-  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
-  color-scheme: dark;
+:root {   /* page names mapped onto the shared design tokens (theme.css: Mars day / dusk) */
+  --ground: var(--mw-bg); --panel: var(--mw-panel); --line: var(--mw-line); --fg: var(--mw-tx); --muted: var(--mw-mut);
+  --dust: var(--mw-accent); --haze: #c58e64; --route: var(--mw-route); --hazard: var(--mw-bad); --ok: var(--mw-ok);
+  --display: var(--mw-sans); --body: var(--mw-sans); --mono: var(--mw-mono);
 }
 * { box-sizing: border-box; }
 html, body { background: var(--ground); color: var(--fg); margin: 0; }
@@ -103,11 +99,40 @@ footer p { margin: 0 0 8px; max-width: 90ch; }
 }
 @media (max-width: 520px) { .hero { padding-top: 32px; } .btn { width: 100%; text-align: center; } }
 @media (prefers-reduced-motion: no-preference) { ol.steps li { transition: box-shadow .25s, border-color .25s; } }
+
+/* ---- shared design language (theme.css) ---- */
+.hero { border-bottom: 1px solid var(--mw-line); padding: 44px 0 36px; }
+.hero .mw-theme-btn { float: right; }
+h1, h2 { font-family: var(--mw-sans); font-stretch: normal; text-transform: none; }
+h1 { font-weight: 750; font-size: clamp(42px, 8vw, 84px); line-height: .98; letter-spacing: -.035em; }
+h1 span { color: var(--mw-accent); }
+h2 { font-size: clamp(20px, 2.2vw, 26px); font-weight: 650; letter-spacing: -.02em; color: var(--mw-tx); }
+.kicker { font-family: var(--mw-sans); font-size: 12.5px; font-weight: 500; text-transform: none; letter-spacing: .01em; }
+.honest { border-left: 0; position: relative; padding: 12px 16px 12px 22px; background: var(--mw-panel); border-radius: 14px; box-shadow: var(--mw-shadow); }
+.honest::before { content: ""; position: absolute; left: 9px; top: 12px; bottom: 12px; width: 3px; border-radius: 999px; background: var(--mw-accent); }
+.btn { font-family: var(--mw-sans); font-stretch: normal; font-size: 14px; font-weight: 600; letter-spacing: -.005em; text-transform: none; border-radius: 999px; padding: 12px 24px; transition: transform .25s var(--mw-ease), background-color .25s; }
+.btn:hover { transform: translateY(-1px); }
+.btn.primary { background: var(--mw-deep); color: var(--mw-ondeep); border-color: transparent; } .btn.primary:hover { background: var(--mw-deep); }
+.btn.secondary { color: var(--mw-tx); border-color: var(--mw-line); background: var(--mw-panel); } .btn.secondary:hover { background: var(--mw-wash); }
+button.tour { border-radius: 999px; border-color: var(--mw-line); background: var(--mw-panel); } button.tour:hover { background: var(--mw-wash); }
+ol.steps li, .stat li, .tablewrap, .chips li, .cmpgrid figure { border-radius: 18px; box-shadow: var(--mw-shadow); }
+.stat li, .chips li { border-radius: 14px; }
+ol.steps li.on { background: var(--mw-wash); border-color: var(--mw-accent); box-shadow: 0 0 0 2px var(--mw-accent); }
+ol.steps li::before { border-color: var(--mw-accent); }
+ol.steps li.on::before { background: var(--mw-accent); border-color: var(--mw-accent); color: #fff; }
+th { font-family: var(--mw-sans); text-transform: none; letter-spacing: .01em; font-size: 12px; }
+.res, .kind { font-family: var(--mw-sans); text-transform: none; letter-spacing: .01em; border-radius: 999px; }
+.res.fail { color: var(--mw-bad); border-color: var(--mw-bad); }
+.kind.computed { color: var(--mw-sim); border-color: var(--mw-sim); }
+.kind.simulated { color: #fff; background: var(--mw-bad); border-color: var(--mw-bad); }
+:root[data-theme="dusk"] .kind.simulated { color: #1a120b; }
+.msg { background: var(--mw-wash); border-radius: 14px; }
+.skip { background: var(--mw-deep); color: var(--mw-ondeep); border-radius: 999px; }
 </style>
 </head>
 <body>
 <a class="skip" href="#tour">Skip to the tour</a>
-<header class="hero"><div class="wrap">
+<header class="hero mw-sky"><div class="wrap"><button type="button" class="mw-theme-btn" data-theme-toggle aria-pressed="false">Dusk</button>
   <p class="kicker">Mars EVA digital twin &middot; Gale Crater &middot; boxwork campaign 2025</p>
   <h1>Mars<span>walk</span></h1>
   <p class="purpose">Plan a spacewalk across the real boxwork terrain Curiosity explored in 2025, let an independent validator say GO or NO-GO, then walk it in first person and replay it from mission control.</p>
