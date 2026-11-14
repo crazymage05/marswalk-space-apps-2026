@@ -1,0 +1,26 @@
+{
+ "rows": 2,
+ "cols": 2,
+ "tile_px": [
+  2016,
+  2604
+ ],
+ "full_px": [
+  4032,
+  5208
+ ],
+ "pixel_m": 0.252936698644875,
+ "files": [
+  "walk_tex_025_0_0.jpg",
+  "walk_tex_025_0_1.jpg",
+  "walk_tex_025_1_0.jpg",
+  "walk_tex_025_1_1.jpg"
+ ],
+ "origin_col_1m": 336,
+ "origin_row_1m": 577,
+ "width_1m": 1008,
+ "height_1m": 1302,
+ "order": "files[r*cols+c]; tile (r,c) covers px x c*tile_w, y r*tile_h from the NW corner",
+ "tint": "rgb=[46+a*209,26+a*178,14+a*128], a=(ortho-p0.5)/(p99.6-p0.5) over the corridor, as build_walk.py",
+ "source": "PSP_009149_1750_RED_A_01_ORTHO 25 cm"
+}

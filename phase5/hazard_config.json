@@ -1,0 +1,11 @@
+{
+ "_note": "MARSWALK hazard rules for the SIMULATED dust event (H2/H3). Thresholds are MARSWALK's own choices, not NASA flight rules.",
+ "rules": {
+  "HZ-1": {"name": "dust core blocks a cell", "tau_ge": 2.0, "effect": "blocked"},
+  "HZ-2": {"name": "dust caution raises cost", "tau_ge": 1.0, "effect": "cost x (1 + k (tau - tau_bg) / (tau_peak - tau_bg))", "k": 3.0}
+ },
+ "lookahead_h": 2.0,
+ "sweep_step_s": 60,
+ "near_surface_scale_height_km": 1.5,
+ "event_ranges": {"radius_m": [150, 320], "speed_mps": [0.8, 3.0], "tau_peak": [2.4, 3.5], "offset_m": [0, 120], "route_frac": [0.55, 0.8]}
+}

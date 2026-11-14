@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARSWALK Mission Control</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#10141a;--panel:#171d26;--panel2:#1d2530;--line:#2c3644;--tx:#e6ebf2;--mut:#98a5b6;
+--ok:#3fb950;--warn:#e3b341;--bad:#f85149;--cyan:#39d0e8;--crew:#7cc4ff;--ground:#f0a35e;--sim:#d98cff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0;letter-spacing:.04em}
+.badge{background:#5b2a8a;color:#fff;border-radius:4px;padding:2px 8px;font-weight:700;font-size:12px;letter-spacing:.1em}
+.hmeta{color:var(--mut)} .hmeta b{color:var(--tx);font-variant-numeric:tabular-nums}
+header a{margin-left:auto;color:var(--cyan);text-decoration:none;border:1px solid var(--cyan);border-radius:4px;padding:4px 10px}
+header a:hover,header a:focus{background:var(--cyan);color:#001}
+#banner{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px 16px;font-weight:600;border-bottom:1px solid var(--line)}
+#banner .dec{font-size:20px;font-weight:800;padding:2px 14px;border-radius:4px;color:#04100a}
+#banner.GO .dec{background:var(--ok)} #banner.NOGO .dec{background:var(--warn)} #banner.ABORT .dec{background:var(--bad)}
+#banner .rule{color:var(--tx)} #banner .txt{color:var(--mut);font-weight:400;flex:1 1 300px}
+main{display:grid;gap:12px;padding:12px 16px;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-areas:"tiles tiles" "tl tl" "map side" "cond cond"}
+section{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+h2{font-size:12px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+#tiles{grid-area:tiles;display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.tile{background:var(--panel2);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:4px;padding:6px 10px}
+.tile .l{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.tile .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .v small{font-size:12px;color:var(--mut);font-weight:400}
+.tile .lim{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums}
+.tile.s-green{border-left-color:var(--ok)} .tile.s-yellow{border-left-color:var(--warn)} .tile.s-red{border-left-color:var(--bad)}
+.bar{position:relative;height:6px;background:#0b0f14;border-radius:3px;margin:4px 0 2px;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ok)}
+.s-yellow .bar i{background:var(--warn)} .s-red .bar i{background:var(--bad)}
+#tlsec{grid-area:tl}
+#tlbar{position:relative;height:28px;background:#0b0f14;border-radius:4px;border:1px solid var(--line);overflow:hidden}
+#tlbar div{position:absolute;top:0;bottom:0;font-size:11px;padding:6px 6px;white-space:nowrap;overflow:hidden;color:#001}
+#tlbar .nom{background:var(--cyan);left:0} #tlbar .res{background:var(--warn)}
+#tlbar .mk{width:3px;background:#fff;padding:0;top:-2px;bottom:-2px;box-shadow:0 0 4px #fff}
+#tllegend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--mut);font-size:12px;margin-top:6px;font-variant-numeric:tabular-nums}
+#mapsec{grid-area:map} #side{grid-area:side;display:flex;flex-direction:column;gap:12px;min-width:0}
+#mapwrap{position:relative;background:#000;border-radius:4px;overflow:hidden}
+#map{display:block;width:100%;height:560px;touch-action:none;cursor:grab}
+#maptools{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
+#legend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--mut);font-size:12px;margin-top:6px}
+#legend span::before{content:"";display:inline-block;width:18px;height:0;border-top:3px solid;margin-right:5px;vertical-align:middle}
+.l-orig::before{border-color:#aab!important;border-top-style:dashed!important}.l-re::before{border-color:var(--cyan)!important}
+.l-walk::before{border-color:#ffd24a!important}.l-dust::before{border-color:#e8a060!important}.l-core::before{border-color:#f85149!important}
+button,select{font:inherit;background:var(--panel2);color:var(--tx);border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--cyan)} button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+button:disabled{opacity:.4;cursor:default}
+#lt .state{font-weight:700;font-size:16px} #lt .cd{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ground)}
+#lt p{margin:6px 0;color:var(--tx)} #lt .who{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+#log{list-style:none;margin:0;padding:0;max-height:330px;overflow:auto}
+#log li{border-left:4px solid var(--line);padding:4px 8px;margin-bottom:6px;background:var(--panel2);border-radius:0 4px 4px 0;font-size:13px}
+#log li .h{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums} #log li .h b{color:var(--tx)}
+#log li.crew{border-left-color:var(--crew)} #log li.ground{border-left-color:var(--ground)} #log li.sim{border-left-color:var(--sim)}
+#cond{grid-area:cond}
+#ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+#scrubwrap{position:relative;padding-top:14px}
+#ticks{position:absolute;left:0;right:0;top:0;height:14px;pointer-events:none}
+#ticks i{position:absolute;top:0;width:2px;height:12px;margin-left:-1px}
+#scrub{width:100%;margin:0;accent-color:var(--cyan)}
+#ticklegend{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11px;color:var(--mut);margin-top:4px}
+.sr{position:absolute;left:-9999px}
+@media(max-width:900px){main{grid-template-columns:minmax(0,1fr);grid-template-areas:"tiles" "tl" "map" "side" "cond"}#map{height:380px}header a{margin-left:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>MARSWALK MISSION CONTROL</h1><span class="badge">SIMULATED</span>
+  <span class="hmeta">Sol <b id="hSol">-</b></span>
+  <span class="hmeta">LMST <b id="hLmst">-</b></span>
+  <span class="hmeta">Step <b id="hStep">-</b></span>
+  <a href="twin.html">Open the 3D walk</a>
+</header>
+<div id="banner" role="status" aria-live="polite" class="GO"><span class="dec" id="bDec">GO</span><span class="rule" id="bRule"></span><span class="txt" id="bTxt"></span></div>
+<main>
+  <section id="tiles" aria-label="Telemetry"></section>
+  <section id="tlsec" aria-label="EVA timeline budget"><h2>EVA timeline: nominal round trip + contingency vs limit</h2>
+    <div id="tlbar"></div><div id="tllegend"></div></section>
+  <section id="mapsec"><h2>Map: Curiosity terrain, 585 x 732 grid</h2>
+    <div id="maptools"><button id="fit" type="button">Fit to route</button><button id="zin" type="button" aria-label="Zoom in">+</button><button id="zout" type="button" aria-label="Zoom out">-</button><span class="hmeta">Drag to pan, wheel to zoom</span></div>
+    <div id="mapwrap"><canvas id="map" role="img" aria-label="Map of the walk with routes and simulated dust event"></canvas></div>
+    <div id="legend"><span class="l-orig">Original route</span><span class="l-re">Replanned route</span><span class="l-walk">Walked track</span><span class="l-dust">SIMULATED dust event</span><span class="l-core">HZ-1 core (tau at threshold)</span></div>
+  </section>
+  <div id="side">
+    <section id="lt" aria-label="Light-time link"><h2>Light-time link to Earth</h2><div id="ltBody"></div></section>
+    <section aria-label="Event log"><h2>Event log</h2><ul id="log"></ul></section>
+  </div>
+  <section id="cond" aria-label="Time conductor"><h2>Time conductor</h2>
+    <div id="ctl">
+      <button id="first" type="button" aria-label="Go to first step">|&lt;</button>
+      <button id="prev" type="button" aria-label="Previous step">&lt;</button>
+      <button id="play" type="button" aria-label="Play">Play</button>
+      <button id="next" type="button" aria-label="Next step">&gt;</button>
+      <button id="last" type="button" aria-label="Go to last step">&gt;|</button>
+      <label>Speed <select id="speed"><option value="1">1x</option><option value="10">10x</option><option value="60" selected>60x</option></select></label>
+      <button id="skip" type="button">Skip ahead to reply</button>
+      <span class="hmeta" id="cT"></span>
+    </div>
+    <div id="scrubwrap"><div id="ticks"></div><label class="sr" for="scrub">Step</label><input id="scrub" type="range" min="0" value="0" step="1"></div>
+    <div id="ticklegend"></div>
+  </section>
+</main>
+<script src="zones.js"></script>
+<script>
+(function(){
+"use strict";
+const KC={plan:'#98a5b6',eva_start:'#3fb950',hazard:'#d98cff',local_proposal:'#7cc4ff',comm_sent:'#f0a35e',comm_received_earth:'#f0a35e',ground_reply:'#ffb870',eva_end:'#3fb950'};
+const $=id=>document.getElementById(id);
+const ptime=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/3600)+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const mmss=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+let L,S,M,EV,cur=0,playT=0,playing=false,img=null,view={x:0,y:0,k:1},lastTs=0;
+const tileDefs=[
+ ['t_s','Suit time',s=>ptime(s),'','upper','t_s'],
+ ['energy_kj','Energy used',v=>v.toFixed(1),'kJ','upper','energy_kj'],
+ ['dose_uGy','Dose',v=>v.toFixed(2),'uGy','upper','dose_uGy'],
+ ['fatigue','Fatigue',v=>(v*100).toFixed(1),'%'],
+ ['margin_time_s','Return margin time',v=>(v/60).toFixed(1),'min','lower','margin_time_s'],
+ ['margin_energy_kj','Return margin energy',v=>v.toFixed(1),'kJ','lower','margin_energy_kj'],
+ ['dose_rate_uGy_h','Dose rate',v=>v.toFixed(2),'uGy/h'],
+ ['tau_at_walker','Tau at walker',v=>v.toFixed(2),''],
+ ['sun_el_deg','Sun elevation',v=>v.toFixed(1),'deg'],
+ ['light_time_min','One-way light-time',v=>v.toFixed(2),'min']];
+function state(def,v){const b=L.limits.bands[def[5]];if(!b)return null;
+ if(def[4]==='upper')return v>=b.red?'red':v>=b.yellow?'yellow':'green';
+ return v<=b.red?'red':v<=b.yellow?'yellow':'green';}
+function limitOf(def){const b=L.limits.bands[def[5]];return b?b.red:null}
+function buildTiles(){const el=$('tiles');el.innerHTML='';
+ tileDefs.forEach(d=>{const t=document.createElement('div');t.className='tile';t.id='tile_'+d[0];
+  t.innerHTML='<div class="l">'+d[1]+'</div><div class="v"><span class="n"></span> <small>'+d[3]+'</small></div>'+(d[4]?'<div class="bar"><i></i></div><div class="lim"></div>':'');
+  el.appendChild(t)});}
+const tileVals={};
+function updTiles(){const s=S[cur];
+ tileDefs.forEach(d=>{const v=s[d[0]];tileVals[d[0]]=v;const t=$('tile_'+d[0]);
+  t.querySelector('.n').textContent=d[2](v);
+  if(d[4]){const st=state(d,v),b=L.limits.bands[d[5]];t.className='tile s-'+st;
+   let frac,txt;
+   if(d[4]==='upper'){frac=v/b.red;txt='yellow '+fmtLim(d[0],b.yellow)+' / red '+fmtLim(d[0],b.red)}
+   else{const top=S[0][d[0]];frac=v/top;txt='yellow <= '+fmtLim(d[0],b.yellow)+' / red <= '+fmtLim(d[0],b.red)}
+   t.querySelector('.bar i').style.width=Math.max(0,Math.min(1,frac))*100+'%';
+   t.querySelector('.lim').textContent=txt+' ('+st+')';}});}
+function fmtLim(k,v){return k==='t_s'?ptime(v):k==='margin_time_s'?(v/60).toFixed(0)+' min':k==='dose_uGy'?v+' uGy':v+' kJ'}
+function ruleName(r){if(!r)return null;
+ for(const dd of [M.plan_decision,M.ground_decision]) if(dd.rule===r&&dd.rule_name)return dd.rule_name;
+ const e=EV.rules&&EV.rules[r];return e?e.name:null;}
+function updBanner(){const s=S[cur];let dec=s.decision,rule=s.rule,txt='';
+ if(!dec){dec=M.plan_decision.decision;rule=M.plan_decision.rule}
+ // latest decision-bearing timeline entry text
+ const ents=shown().filter(e=>e.decision);if(ents.length)txt=ents[ents.length-1].text;else txt=M.plan_decision.text;
+ const cls=dec==='NO-GO'?'NOGO':dec;$('banner').className=cls;
+ $('bDec').textContent=dec;const rn=ruleName(rule);
+ // a step with no triggered rule after the re-plan: say the walk continues on the route re-planned under that rule
+ const rp=shown().filter(e=>e.kind==='local_proposal'&&e.rule).pop();
+ $('bRule').textContent=rule?('Rule '+rule+(rn?' - '+rn:'')):rp?('Continuing on the route re-planned under '+rp.rule+(ruleName(rp.rule)?' - '+ruleName(rp.rule):'')):'No rule triggered';
+ $('bTxt').textContent=txt;banner={decision:dec,rule:rule||null};}
+let banner={};
+function shown(){const t=S[cur].t_s;return M.timeline.filter(e=>e.step<=cur)}
+function updHeader(){const s=S[cur];$('hSol').textContent=s.sol;const h=s.lmst_h,hh=Math.floor(h),mm=Math.floor((h-hh)*60);
+ $('hLmst').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');$('hStep').textContent=cur+' / '+(S.length-1);$('cT').textContent='t = '+ptime(s.t_s)+' ('+Math.round(s.t_s)+' s) · zone '+(window.MWZones&&MWZones.ready?MWZones.label(s.col,s.row):'-');}
+function updTimelineBar(){const tl=M.plan_decision.timeline,lim=tl.limit_s,bar=$('tlbar');
+ const pc=v=>(v/lim*100)+'%';
+ bar.innerHTML='<div class="nom" style="width:'+pc(tl.nominal_roundtrip_s)+'">nominal</div><div class="res" style="left:'+pc(tl.nominal_roundtrip_s)+';width:'+pc(tl.contingency_reserve_s)+'">contingency</div><div class="mk" style="left:'+pc(S[cur].t_s)+'" title="current suit time"></div>';
+ $('tllegend').innerHTML='<span>Nominal round trip '+ptime(tl.nominal_roundtrip_s)+'</span><span>Contingency reserve '+ptime(tl.contingency_reserve_s)+'</span><span>Nominal + contingency '+ptime(tl.nominal_plus_contingency_s)+'</span><span>Limit '+ptime(lim)+'</span><span>Now (white marker) '+ptime(S[cur].t_s)+'</span>';}
+function updLog(){const el=$('log');const es=shown().slice().reverse();
+ el.innerHTML=es.map(e=>'<li class="'+e.source+'"><div class="h"><b>'+mmss(e.t_s)+'</b> &middot; '+e.source+' &middot; '+e.kind+(e.rule?' &middot; '+e.rule:'')+(e.decision?' &middot; '+e.decision:'')+'</div>'+esc(e.text)+'</li>').join('');}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function ent(kind){return M.timeline.find(e=>e.kind===kind)}
+function countdown(){const sent=ent('comm_sent'),rep=ent('ground_reply');
+ if(sent&&rep&&cur>=sent.step&&cur<rep.step)return Math.max(0,rep.t_s-S[cur].t_s);return null}
+function updLT(){const sent=ent('comm_sent'),rep=ent('ground_reply'),prop=ent('local_proposal'),rx=ent('comm_received_earth');
+ let h='';
+ if(!sent||cur<sent.step){h='<div class="state">Link idle</div><p class="who">No request pending. One-way light-time '+S[cur].light_time_min.toFixed(2)+' min.</p>';}
+ else{const cd=countdown();
+  h+='<div class="state">'+(cd!==null?'Request sent':'Reply received')+'</div>';
+  if(prop&&cur>=prop.step)h+='<div class="who">Walker local proposal (crew, immediate)</div><p>'+esc(prop.text)+'</p>';
+  h+='<div class="who">Request</div><p>'+esc(sent.text)+'</p>';
+  if(cd!==null){h+='<div class="who">Countdown to ground reply</div><div class="cd" id="cd">'+ptime(cd)+'</div>';
+   h+='<div class="who">'+(rx&&cur>=rx.step?'Received at mission control; ground validating':'Request in transit to Earth')+'</div>';}
+  else if(rep&&cur>=rep.step){h+='<div class="who">Ground reply (mission control)</div><p>'+esc(rep.text)+'</p>';}}
+ $('ltBody').innerHTML=h;$('skip').disabled=!(rep&&cur<rep.step);}
+// ---- map
+const cv=$('map'),ctx=cv.getContext('2d');let W=0,H=0,dpr=1,GW,GH,CM;
+function cellXY(c){const row=Math.floor(c/GW),col=c%GW;return [(col+.5)*img.width/GW,(row+.5)*img.height/GH]}
+function mToPx(m){return m/CM*img.width/GW}
+function resize(){dpr=window.devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;draw()}
+function fit(){if(!img)return;let a=1e9,b=1e9,c=-1e9,d=-1e9;
+ const add=ids=>ids.forEach(i=>{const p=cellXY(i);a=Math.min(a,p[0]);b=Math.min(b,p[1]);c=Math.max(c,p[0]);d=Math.max(d,p[1])});
+ add(M.original_route);add(M.replanned_route);add(S.map(s=>s.cell));
+ const e=evPos(S[S.length-1].t_s),r=mToPx(EV.radius_m);
+ [[EV.centre_xy_m,0],[null,0]].forEach(()=>{});
+ [evPx(0),evPx(S[S.length-1].t_s-S[M.event_step].t_s)].forEach(p=>{a=Math.min(a,p[0]-r);b=Math.min(b,p[1]-r);c=Math.max(c,p[0]+r);d=Math.max(d,p[1]+r)});
+ a=Math.max(0,a);b=Math.max(0,b);c=Math.min(img.width,c);d=Math.min(img.height,d);
+ const pad=40,k=Math.min((W-2*pad)/(c-a),(H-2*pad)/(d-b));view.k=k;view.x=W/2-k*(a+c)/2;view.y=H/2-k*(b+d)/2;draw()}
+function evPx(dt){const dir=EV.direction_deg*Math.PI/180,v=EV.speed_mps*dt;
+ const xm=EV.centre_xy_m[0]+Math.sin(dir)*v,ym=EV.centre_xy_m[1]-Math.cos(dir)*v;
+ return [xm/CM*img.width/GW,ym/CM*img.height/GH]}
+function evPos(t){return evPx(t-S[M.event_step].t_s)}
+function coreR(){const thr=EV.rules['HZ-1'].tau_ge,sg=EV.radius_m/2,q=(EV.tau_peak-EV.tau_bg)/(thr-EV.tau_bg);return q>1?sg*Math.sqrt(2*Math.log(q)):0}
+function line(ids,from){ctx.beginPath();for(let i=from||0;i<ids.length;i++){const p=cellXY(ids[i]);i===(from||0)?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1])}ctx.stroke()}
+function draw(){if(!img||!W)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+ ctx.save();ctx.translate(view.x,view.y);ctx.scale(view.k,view.k);ctx.drawImage(img,0,0);
+ const lw=1/view.k;ctx.lineJoin='round';
+ ctx.strokeStyle='#cfd6e0';ctx.lineWidth=2.5*lw;ctx.setLineDash([8*lw,6*lw]);line(M.original_route);ctx.setLineDash([]);
+ const s=S[cur];
+ if(cur>=M.event_step){ctx.strokeStyle='#39d0e8';ctx.lineWidth=3*lw;const rr=M.replanned_route;
+  // replanned route starts at the walker cell at event_step
+  line(rr);}
+ ctx.strokeStyle='#ffd24a';ctx.lineWidth=4*lw;ctx.beginPath();for(let i=0;i<=cur;i++){const p=cellXY(S[i].cell);i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])}ctx.stroke();
+ if(cur>=M.event_step){const p=evPos(s.t_s),r=mToPx(EV.radius_m),cr=mToPx(coreR());
+  ctx.fillStyle='rgba(232,160,96,0.28)';ctx.strokeStyle='#e8a060';ctx.lineWidth=2*lw;ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill();ctx.stroke();
+  if(cr>0){ctx.fillStyle='rgba(248,81,73,0.32)';ctx.strokeStyle='#f85149';ctx.beginPath();ctx.arc(p[0],p[1],cr,0,7);ctx.fill();ctx.stroke();}
+  ctx.fillStyle='#fff';ctx.font=(13*lw)+'px sans-serif';ctx.fillText('SIMULATED dust',p[0]-r*0.5,p[1]-r-6*lw);}
+ const w=cellXY(s.cell);ctx.fillStyle='#fff';ctx.strokeStyle='#d33';ctx.lineWidth=3*lw;ctx.beginPath();ctx.arc(w[0],w[1],7*lw,0,7);ctx.fill();ctx.stroke();
+ ctx.restore();}
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
+cv.addEventListener('pointermove',e=>{if(!drag)return;view.x=drag.vx+e.clientX-drag.x;view.y=drag.vy+e.clientY-drag.y;draw()});
+cv.addEventListener('pointerup',()=>{drag=null;cv.style.cursor='grab'});
+function zoom(f,cx,cy){cx=cx??W/2;cy=cy??H/2;view.x=cx-(cx-view.x)*f;view.y=cy-(cy-view.y)*f;view.k*=f;draw()}
+cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoom(e.deltaY<0?1.2:1/1.2,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+$('zin').onclick=()=>zoom(1.3);$('zout').onclick=()=>zoom(1/1.3);$('fit').onclick=fit;
+// ---- control
+function setStep(i,keepT){i=Math.max(0,Math.min(S.length-1,Math.round(i)));cur=i;if(!keepT)playT=S[i].t_s;$('scrub').value=i;
+ updHeader();updTiles();updBanner();updTimelineBar();updLog();updLT();draw();}
+function tick(ts){if(playing){const dt=lastTs?(ts-lastTs)/1000:0;playT+=dt*(+$('speed').value);
+  let i=cur;while(i<S.length-1&&S[i+1].t_s<=playT)i++;
+  if(playT>=S[S.length-1].t_s){playT=S[S.length-1].t_s;setStep(S.length-1,true);setPlay(false)}else if(i!==cur)setStep(i,true);
+  const c=countdown();const cd=$('cd');if(cd&&c!==null)cd.textContent=ptime(Math.max(0,ent('ground_reply').t_s-playT));}
+ lastTs=ts;requestAnimationFrame(tick)}
+function setPlay(p){playing=p;$('play').textContent=p?'Pause':'Play';$('play').setAttribute('aria-label',p?'Pause':'Play');if(p&&cur>=S.length-1)setStep(0)}
+$('play').onclick=()=>setPlay(!playing);
+$('first').onclick=()=>setStep(0);$('last').onclick=()=>setStep(S.length-1);
+$('prev').onclick=()=>setStep(cur-1);$('next').onclick=()=>setStep(cur+1);
+$('scrub').oninput=e=>setStep(+e.target.value);
+$('skip').onclick=()=>{const r=ent('ground_reply');if(r)setStep(r.step)};
+function buildTicks(){const n=S.length-1;let h='',lg='';
+ M.timeline.forEach(e=>{h+='<i style="left:'+(e.step/n*100)+'%;background:'+(KC[e.kind]||'#999')+'" title="'+e.kind+' @ '+mmss(e.t_s)+'"></i>'});
+ const seen={};M.timeline.forEach(e=>{if(!seen[e.kind]){seen[e.kind]=1;lg+='<span><b style="color:'+KC[e.kind]+'">|</b> '+e.kind+'</span>'}});
+ $('ticks').innerHTML=h;$('ticklegend').innerHTML=lg;}
+fetch('mission_log.json').then(r=>r.json()).then(j=>{
+ L=j;S=j.steps;M=j.mission;EV=M.event;L.limits=M.limits;GW=M.grid.width;GH=M.grid.height;CM=M.grid.cell_m;if(window.MWZones)MWZones.setGrid(GW,GH,CM);
+ $('scrub').max=S.length-1;buildTiles();buildTicks();
+ window.__mission={log:L,get step(){return cur},setStep:i=>setStep(i),
+  tiles:()=>Object.assign({},tileVals),banner:()=>Object.assign({},banner),
+  logShown:()=>shown().map(e=>e.kind),countdown:()=>countdown()};
+ const im=new Image();im.onload=()=>{img=im;resize();fit();setStep(0)};im.src=M.map_image;
+ setStep(0);requestAnimationFrame(tick);
+}).catch(e=>{document.body.insertAdjacentHTML('beforeend','<p style="padding:16px">Failed to load mission_log.json: '+e+'</p>')});
+window.addEventListener('resize',()=>{if(img){const was=W;resize();}});
+})();
+</script>
+<script src="suit.js"></script>
+<script src="feed.js"></script>
+<script src="hazard_watch.js"></script>
+</body>
+</html>

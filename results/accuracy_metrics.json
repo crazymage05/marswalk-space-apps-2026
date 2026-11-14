@@ -1,0 +1,67 @@
+{
+ "grid": {
+  "w": 585,
+  "h": 732,
+  "cell_m": 4.046987178318
+ },
+ "profile": {
+  "max_slope_deg": 25.0,
+  "rough_max_m": 0.35
+ },
+ "M1_curiosity_path": {
+  "cells": 1844,
+  "walkable": 1837,
+  "walkable_pct": 99.6,
+  "blocked_by": {
+   "slope_over_limit": 6,
+   "rough_over_limit": 0,
+   "boulder_footprint": 1,
+   "low_data_or_unknown": 0
+  },
+  "slope_max_deg_on_path": {
+   "median": 8.8,
+   "p95": 17.7
+  }
+ },
+ "M2_slope_vs_rover_tilt": {
+  "stops": 261,
+  "sols": [
+   4102,
+   5069
+  ],
+  "tilt_median_deg": 8.5,
+  "cell_mean_1m_slope": {
+   "mae_deg": 3.53,
+   "bias_deg": -0.71,
+   "r": 0.345
+  },
+  "plane_slope_3x3_cells": {
+   "mae_deg": 3.42,
+   "bias_deg": -0.99,
+   "r": 0.381
+  }
+ },
+ "M3_random_routes": {
+  "pairs": 60,
+  "found": 53,
+  "found_pct": 88.3,
+  "spatial_rules_pass_pct": 100.0,
+  "full_go_pct": 100.0,
+  "failed_rules_seen": [],
+  "boulder_cells_entered": 0,
+  "length_vs_straight": {
+   "median": 1.505,
+   "p90": 3.339,
+   "max": 5.045
+  },
+  "runtime_s": {
+   "median": 0.221,
+   "p90": 0.687
+  },
+  "seed": 0,
+  "distance_band_m": [
+   300,
+   1500
+  ]
+ }
+}

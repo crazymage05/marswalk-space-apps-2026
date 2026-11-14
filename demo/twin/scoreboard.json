@@ -1,0 +1,172 @@
+{
+ "generated_utc": "2026-11-14T03:12:19Z",
+ "rows": [
+  {
+   "area": "Accuracy",
+   "check": "Ground truth: Curiosity's own drive path through the twin area (it drove there, so the ground was passable); share our rules mark walkable",
+   "result": "pass",
+   "numbers": "99.6% walkable (1837/1844 cells); blocked: 6 slope > 25 deg, 1 boulder footprint",
+   "source": "tools/accuracy_metrics.py (M1)",
+   "kind": "computed"
+  },
+  {
+   "area": "Accuracy",
+   "check": "HiRISE terrain slope vs Curiosity's tilt sensor at its stops (independent measurement)",
+   "result": "info",
+   "numbers": "mean error 3.42 deg, bias -0.99 deg, r 0.381 over 261 stops (sols 4102-5069)",
+   "source": "tools/accuracy_metrics.py (M2)",
+   "kind": "computed"
+  },
+  {
+   "area": "Accuracy",
+   "check": "Random-route stress test: 60 random start/end pairs 300-1500 m apart",
+   "result": "pass",
+   "numbers": "88.3% have a safe route; 100.0% of found routes pass every rule; 0 boulder cells entered; median 1.505x straight line; 0.221 s",
+   "source": "tools/accuracy_metrics.py (M3, seed 0)",
+   "kind": "computed"
+  },
+  {
+   "area": "RL environment",
+   "check": "Gymnasium environment: actions, shaping, termination, determinism",
+   "result": "pass",
+   "numbers": "18/18 in 8 s",
+   "source": "phase4/tests_env.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Planner",
+   "check": "A* vs independent Dijkstra, validator catches broken routes, recommended planner",
+   "result": "pass",
+   "numbers": "9/9 in 47 s",
+   "source": "phase4/tests_nav.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Flight rules",
+   "check": "16 adversarial routes NO-GO by the expected rule; GO/NO-GO/ABORT logic",
+   "result": "pass",
+   "numbers": "30/30 in 0 s",
+   "source": "phase4/tests_rules.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Hazards",
+   "check": "Dust event reproducible; re-plan avoids every blocked cell and passes the validator",
+   "result": "pass",
+   "numbers": "7/7 in 6 s",
+   "source": "phase5/tests_hazard.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Browser",
+   "check": "Twin page, desktop 1440 px: every control, walk, scans, sol slider",
+   "result": "pass",
+   "numbers": "31/31 checks, 0 errors, GPU: ANGLE (Apple, ANGLE Metal Renderer: Appl",
+   "source": "tools/twin_check.py (v2b_1440)",
+   "kind": "computed"
+  },
+  {
+   "area": "Browser",
+   "check": "Twin page, phone 400 px: every control, walk, scans, sol slider",
+   "result": "pass",
+   "numbers": "31/31 checks, 0 errors, GPU: ANGLE (Apple, ANGLE Metal Renderer: Appl",
+   "source": "tools/twin_check.py (v2b_400)",
+   "kind": "computed"
+  },
+  {
+   "area": "Suit model",
+   "check": "Helmet HUD equals the Python astronaut model and validator (start, middle, end, 3 random)",
+   "result": "pass",
+   "numbers": "worst difference 0.25% (target 1%)",
+   "source": "tools/hud_check.py (independent agent)",
+   "kind": "computed"
+  },
+  {
+   "area": "Walking astronaut",
+   "check": "Planted feet do not slide; boots on the ground (flat, 8.5 deg slope, 15x speed)",
+   "result": "pass",
+   "numbers": "max slide 4.1 cm (target 5), ankle height median 0.02 cm",
+   "source": "tools/gait_check.py (independent agent)",
+   "kind": "computed"
+  },
+  {
+   "area": "Terrain light",
+   "check": "Terrain occlusion on the GPU equals the stored sky-view layers",
+   "result": "pass",
+   "numbers": "50 points, max difference 0.0029 (target 0.01)",
+   "source": "tools/sv_check.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Mission control",
+   "check": "Every tile equals the mission log at every step; replay order; light-time countdown",
+   "result": "pass",
+   "numbers": "54 checks passed, 0 failed; tiles exact at 327/327 steps",
+   "source": "tools/mission_check.py (independent agent)",
+   "kind": "computed"
+  },
+  {
+   "area": "Boulders",
+   "check": "HiRISE-detected boulders block the planner and fail the validator (CS-02); browser and Python block the same cells",
+   "result": "pass",
+   "numbers": "11/11; 470/470 cells identical in both",
+   "source": "phase4/tests_boulders.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Crew support",
+   "check": "Rover as safe haven: walk-back measured to the rover; default unchanged",
+   "result": "pass",
+   "numbers": "11/11",
+   "source": "phase4/tests_refuge.py",
+   "kind": "computed"
+  },
+  {
+   "area": "Suit model",
+   "check": "Carried load (Wickman & Luna 1995): 0 kg unchanged, energy rises with load, browser equals Python",
+   "result": "pass",
+   "numbers": "12/12; browser vs Python max relative difference 2.7e-16",
+   "source": "phase4/tests_load.py",
+   "kind": "computed"
+  }
+ ],
+ "provenance": [
+  {
+   "item": "Terrain (HiRISE 1 m stereo DTM, 25 cm image)",
+   "kind": "measured"
+  },
+  {
+   "item": "Curiosity Navcam 3D scans and photos, rover track",
+   "kind": "measured"
+  },
+  {
+   "item": "REMS weather at the rover; RAD dose rate per sol",
+   "kind": "measured"
+  },
+  {
+   "item": "Dust optical depth: Mastcam climatology for the season (not a 2025 measurement)",
+   "kind": "derived"
+  },
+  {
+   "item": "Mars-Earth light-time (JPL Horizons)",
+   "kind": "computed"
+  },
+  {
+   "item": "Ground temperature and dose per cell, sky view, insolation",
+   "kind": "modelled"
+  },
+  {
+   "item": "Astronaut speed, energy and fatigue (suited reduced-gravity data, v2)",
+   "kind": "modelled"
+  },
+  {
+   "item": "Dust event and its re-plan",
+   "kind": "SIMULATED"
+  }
+ ],
+ "summary": {
+  "passed": 10,
+  "failed": 0,
+  "not_run": 0
+ }
+}

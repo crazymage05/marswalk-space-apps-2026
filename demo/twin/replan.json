@@ -1,0 +1,54 @@
+{
+ "SIMULATED": true,
+ "label": "SIMULATED dust event (not an observed storm)",
+ "rule": "HZ-1",
+ "explanation": "Rule HZ-1 (dust core blocks a cell: tau >= 2.0): 75 cells of the planned route lie in the SIMULATED dust event (not an observed storm) within the next 2.0 h (peak tau 3.3, moving 1.5 m/s towards 152 deg). Re-planned from the walker's cell: +272 m, +6.8 min, +189 kJ, +0.73 uGy for the rest of the walk. Validator: GO (all terrain and resource checks pass).",
+ "diff": {
+  "distance_m": 271.57235461308323,
+  "time_s": 407.8616532384133,
+  "energy_kj": 189.27829943238157,
+  "dose_uGy": 0.7307521287188241
+ },
+ "validator_ok": true,
+ "event_ok": true,
+ "before": {
+  "distance_m": 763.9558197412184,
+  "energy_kj": 551.330169404235,
+  "time_s": 1112.749687200997
+ },
+ "after": {
+  "distance_m": 1035.5281743543017,
+  "energy_kj": 740.6084688366166,
+  "time_s": 1520.6113404394102
+ },
+ "event": {
+  "seed": 1,
+  "tau_peak": 3.310472853202486,
+  "radius_m": 311.27040601333147,
+  "speed_mps": 1.4860291944230681
+ },
+ "route": {
+  "start_cell": 121944,
+  "goal_cell": 245253,
+  "walker_index": 63,
+  "n_cells": 213,
+  "cell_m": 4.046987178318,
+  "note": "Python A*, nominal profile; remaining-route metrics are from the walker's cell onward"
+ },
+ "provenance": {
+  "script": "tools/export_replan.py",
+  "seed": 1,
+  "event_id": "dust_1_4500_9.00",
+  "sol": 4500,
+  "lmst_start": 9.0,
+  "event_at_route_fraction": 0.3,
+  "git_hash": "1770955",
+  "generated": "2026-11-12",
+  "modules": [
+   "phase5/dust_event.py",
+   "phase5/replan.py",
+   "phase4/astar.py",
+   "phase4/safety_validator.py"
+  ]
+ }
+}
