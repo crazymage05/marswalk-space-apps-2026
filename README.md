@@ -100,3 +100,4 @@ NASA data; no AI-generated images, video or voice are used.
 Data: NASA/JPL-Caltech, University of Arizona (HiRISE), MSSS (CTX, Mastcam), ASU (THEMIS), JHUAPL (CRISM), LANL/CNES
 (ChemCam), University of Guelph (APXS), MOLA science team, NASA CCMC (DONKI), NASA GIBS/Worldview, USGS Astrogeology.
 3D models: NASA (Curiosity, Mark III suit); the backpack on the suit is our addition.
+Page design: visual language adapted from the MIT-licensed "Lilac Meadow Landing" template (Kedhareswer Naidu).
