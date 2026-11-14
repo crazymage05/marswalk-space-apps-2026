@@ -103,6 +103,7 @@ st = sc.sequence_editor_create().strips.new_image(name="d30", filepath="{src}/fr
 for i in range(2, {idx} + 1): st.elements.append(f"frame_{{i:04d}}.jpg")
 r = sc.render; r.image_settings.file_format = "FFMPEG"; r.ffmpeg.format = "MPEG4"; r.ffmpeg.codec = "H264"
 r.ffmpeg.constant_rate_factor = "HIGH"; r.ffmpeg.ffmpeg_preset = "GOOD"; r.ffmpeg.audio_codec = "NONE"
+sc.view_settings.view_transform = "Standard"; sc.view_settings.look = "None"; sc.view_settings.exposure = 0; sc.view_settings.gamma = 1  # frames are display-ready sRGB: pass them through (AgX greyed them)
 r.use_sequencer = True; r.filepath = "{out}"; r.use_file_extension = False
 bpy.ops.render.render(animation=True)
 """
