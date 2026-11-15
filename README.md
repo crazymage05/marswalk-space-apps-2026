@@ -26,6 +26,10 @@ Guide: Martian Map" ([challenge text](docs/challenge.md)).
 - **Mission control.** What Earth sees, with the light-time delay: suit health, a simulated dust event and re-plan, live
   feeds (Curiosity and Perseverance raw images, NASA Worldview over the Deep Space Network sites), solar-storm arrivals
   at Mars from NASA DONKI.
+- **New data updates the world.** Feeds (`tools/ingest.py`, one plug-in file per source, so a future rover is one new file)
+  and uploads in mission control (RAD and REMS CSV, Navcam images, JSON records) reach an open twin at once. New radiation
+  re-checks the GO verdict; a new hazard zone (dust storm or a new obstacle such as a rockfall) blocks its cells, fails
+  rule HZ-1 and makes the twin re-plan the route around it. New terrain still needs the processing scripts re-run.
 - **Render any route as film.** `tools/render_route.py` takes a share link from the page and renders that walk in Blender.
 
 ## NASA data and the challenge's Resources tab

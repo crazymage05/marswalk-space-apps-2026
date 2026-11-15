@@ -48,7 +48,7 @@ def poll(state: dict) -> (records: list, new_state: dict, status: dict)
 { id, type: "rad"|"photo"|"weather"|"hazard", source, observed_utc, available_utc, ingested_utc, sol,
   label: "measured"|"modelled"|"simulated",
   rad: {uGy_h}, photo: {file, x, y, camera}, weather: {min_C, max_C, pressure_Pa},
-  hazard: {kind: "dust_storm"|"cme"|"sep", start_utc, end_utc, center: {lat, lon}|null, radius_km, affects_site, note},
+  hazard: {kind: "dust_storm"|"cme"|"sep"|"obstacle", start_utc, end_utc|null, center: {lat, lon}|null, radius_km, affects_site, note},
   provenance: {url, sha256, method} }
 ```
 
@@ -84,6 +84,20 @@ Written separately (hazard records: CME arrivals at Mars from WSA-ENLIL, SEP eve
 
 No near-real-time public source for Curiosity RAD dose rates exists: RAD data reaches the public only through PDS. The raw-image API is the only source here that is fast (about a day).
 
+## What a new record changes in the twin
+
+| Record | Effect |
+|---|---|
+| `rad` | Dose numbers and the GO/NO-GO verdict are recomputed with the new rate (CS-07). |
+| `weather` | Temperature and pressure for that sol are replaced or added. |
+| `photo` | A pin on the map and the photo in the walk view. |
+| `hazard` with a centre inside the map | A red circle on the map. Its cells are blocked for the planner, and the validator fails any route that enters them (rule HZ-1). If the shown route crosses the zone, the twin re-plans it at once and the status line names the record. A start or end point inside a zone is refused. A zone whose `end_utc` has passed no longer blocks, and `end_utc: null` means no end known yet. |
+| `hazard` with no centre, or outside the map | A banner only (for example a CME arriving at Mars). |
+
+`obstacle` is for a new blockage seen on the ground or from orbit (rockfall, collapse, a new boulder field); a future rover or orbiter feed can send it with the same schema. `MWTwin.retract(id)` withdraws a zone, and the route is re-planned again. Test: `python tools/hazard_replan_check.py [port]` with `demo/twin` served on the port (17 checks).
+
+New terrain is different. A new elevation model, orbital image or a site elsewhere on Mars goes through the Phase 2 scripts and the exports in `tools/` and `demo/`, which takes minutes to hours; it is not a browser upload.
+
 ## Upload in the browser
 
 On `mission.html`, the Data feed panel takes files by drop or file picker. Parsing and validation happen in the browser; nothing is sent to a server.
@@ -99,9 +113,10 @@ Every problem is listed with its row or record number ("Row 3: min_C -60 is abov
 
 ## Limits
 
-- The twin's terrain, routes and rules cover Curiosity's 2025 boxwork campaign (sols 4500 to 4799). New photos and weather are real and recent but are not part of that campaign; the twin shows them as new data, it does not re-plan the 2025 campaign with them.
+- The twin's terrain, routes and rules cover Curiosity's 2025 boxwork campaign (sols 4500 to 4799). New photos and weather are real and recent but are not part of that campaign; the twin shows them as new data, it does not re-plan the 2025 campaign with them. Hazard zones are the exception: they re-plan the route shown.
 - RAD and Navcam XYZ for new sols reach PDS about 4 months after the last sol of a release; nothing public is faster.
 - The REMS weather summary has no publication timestamp, so its latency is a lower bound.
 - Photo placement is the waypoint of the image's drive, not the exact stop; images from before a later drive in the same sol can be a few metres off.
+- The Python validator (`phase4/safety_validator.py`) does not read live hazard records; HZ-1 is checked in the browser only.
 - Browser uploads live in one browser profile. They are not shared between machines and are cleared by "Clear my uploads" or by clearing site data.
 - If `feed.json` is missing the panel says so and uploads still work, but the browser itself logs a 404 line in the console for the failed request; no script error is raised. Running `ingest.py` once (even `--offline`) creates the file.

@@ -491,6 +491,14 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // Crew and support (all off by default): buddy pair, rover as safe haven (walk-back measured to a parked rover). Carried load is SUIT.carried.
   const CREW = { pair: false, haven: false, rover: null, roverUser: false, parking: false, fld: null, area: null };
   let lastBuild = null, MULTI = null; const candPins = [], dests = [], LIVE = { photos: [], zones: [] }, livePins = [];
+  // Live hazard zones (records from tools/ingest.py or uploads in mission control) block their cells for the planner and
+  // fail rule HZ-1 in the validator, so a new observation changes the route, not just the picture. A zone with an end time
+  // in the past no longer blocks. Cell (cx, cy) is inside when its centre is within the radius of the zone centre.
+  const HZC = new Set();
+  function hzRebuild() { HZC.clear(); const now = Date.now();
+    for (const z of LIVE.zones) { if (z.end && Date.parse(z.end) < now) continue; const n = Math.ceil(z.rc) + 1, cx0 = Math.floor(z.x), cy0 = Math.floor(z.y);
+      for (let dy = -n; dy <= n; dy++) for (let dx = -n; dx <= n; dx++) { const cx = cx0 + dx, cy = cy0 + dy;
+        if (cx >= 0 && cy >= 0 && cx < W && cy < H && Math.hypot(cx - z.x, cy - z.y) <= Math.max(0.5, z.rc)) HZC.add(cy * W + cx); } } }
 
   function drawTexture() {
     tctx.globalAlpha = 1; tctx.drawImage(photo, 0, 0);
@@ -518,7 +526,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     for (const z of LIVE.zones) { const x = (z.x + 0.5) * sx, y = (z.y + 0.5) * sy, r = Math.max(8, z.rc * sx);
       tctx.save(); tctx.fillStyle = "rgba(229,86,60,0.22)"; tctx.beginPath(); tctx.arc(x, y, r, 0, 7); tctx.fill();
       tctx.strokeStyle = "#e5563c"; tctx.lineWidth = 4; tctx.setLineDash([14, 10]); tctx.beginPath(); tctx.arc(x, y, r, 0, 7); tctx.stroke(); tctx.restore();
-      tctx.fillStyle = "#fff"; tctx.font = "700 44px Archivo, sans-serif"; tctx.textAlign = "center"; tctx.textBaseline = "middle"; tctx.fillText(z.kind.replace("_", " ") + " (" + z.label + ")", x, y); }
+    }   // its label is drawn upright in the label overlay (__zoneDraw)
     drawHaven();
     if (L.route && route) {
       for (const [w, c] of [[14, "rgba(10,30,36,0.7)"], [6, "#6fd8ea"]]) {
@@ -709,6 +717,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // (exact slope_max from world_cells / the Python rules mask), and roughness above the limit (CS-02) was only a cost.
   const noGo = (n, maxS) => { if (SLOPE[n] > maxS) return true;
     if (RM.q) { const b = RM.q[n]; if ((maxS === PROFILE.maxSlope && (b & 1)) || (b & 2)) return true; }
+    if (HZC.has(n)) return true;          // live hazard zone (HZ-1)
     if (ROCK.cells.has(n)) return true;   // boulder >= ~1 m detected from its HiRISE shadow (rocks.json)
     if (WC.layers) { const sl = wcVal("slope_max_deg", n); if (sl != null && sl > maxS) return true; }
     return false; };
@@ -865,7 +874,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // planner's slider. Resources: the same astronaut.py v2 port as the visor; round trip = out + walk back, 25% reserve.
   const RULE_NAMES = { "CS-01": "Terrain slope above the walker's limit", "CS-02": "Obstacle roughness above the limit", "CS-03": "Terrain unknown (no slope or roughness data)",
     "CS-04": "Terrain data confidence too low", "CS-05": "EVA time with the walk back exceeds the limit minus the reserve", "CS-06": "Walking energy with the walk back exceeds the budget minus the reserve",
-    "CS-07": "Radiation dose of the round trip exceeds the per-EVA limit", "SY-01": "Route is empty", "SY-02": "Route leaves the terrain grid", "SY-03": "Route is not continuous (cells not 8-neighbours)" };
+    "CS-07": "Radiation dose of the round trip exceeds the per-EVA limit", "HZ-1": "Route enters a live hazard zone", "SY-01": "Route is empty", "SY-02": "Route leaves the terrain grid", "SY-03": "Route is not continuous (cells not 8-neighbours)" };
   const RULE_ORDER = Object.keys(RULE_NAMES);
   const PROFILE = { maxSlope: 25, roughMax: 0.35, vfMin: 0.5 };
   // exact per-cell rule flags from Python (demo/export_rules_mask.py); without them the 8-bit layers are used (stricter near limits)
@@ -902,6 +911,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
       if (sl == null) add("CS-03", i, "slope unknown"); else if (sl > lim) add("CS-01", i, sl);
       if (ro == null) add("CS-03", i, "roughness unknown"); else if (ro > PROFILE.roughMax) add("CS-02", i, ro);
       if (vf == null || vf < PROFILE.vfMin) add("CS-04", i, vf); }
+      if (HZC.has(c)) add("HZ-1", i, c);
       if (i) { const p = cells[i - 1]; if (p >= 0 && p < N && Math.max(Math.abs(((p / W) | 0) - ((c / W) | 0)), Math.abs(p % W - c % W)) !== 1) add("SY-03", i, 0); }
     }
     let res = null;
@@ -949,7 +959,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     if (r.decision === "GO") { el.className = "verdict go"; el.innerHTML = `<b class="v">GO</b>All plan flight rules pass (CS-01–07, SY-01–03; daylight CS-08 not checked here).<small>${resTxt} ${lim === PROFILE.maxSlope ? "Independent of the planner: the walker's limits are 25°, 0.35 m roughness." : (marginOn() ? `CS-01 uses ${lim.toFixed(1)}°: your slider limit less the ${MAP_ERR.deg}° safety margin for map error; roughness limit 0.35 m.${lim > PROFILE.maxSlope ? " " + CAUTION : ""}` : `CS-01 uses the slope limit you set (${lim}°); roughness limit 0.35 m. ${CAUTION}`)}</small>`; }
     else { const v = r.violations[r.rule], worst = v.reduce((m, x) => typeof x.val === "number" && x.val > m ? x.val : m, -Infinity);
       const lostN = hvn ? hvn.lost.length : 0;
-      const detail = r.rule === "CS-05" && lostN ? `${lostN} route cell${lostN > 1 ? "s have" : " has"} no allowed path to the parked rover` : r.rule === "CS-01" ? `${v.length} cell${v.length > 1 ? "s" : ""}, steepest ${worst.toFixed(1)}° (limit ${limTxt(lim)}°${marginOn() ? ", incl. safety margin" : ""})` : r.rule === "CS-02" ? `${v.length} cell${v.length > 1 ? "s" : ""}, roughest ${worst.toFixed(2)} m (limit 0.35 m)` : `${v.length} finding${v.length > 1 ? "s" : ""}`;
+      const detail = r.rule === "CS-05" && lostN ? `${lostN} route cell${lostN > 1 ? "s have" : " has"} no allowed path to the parked rover` : r.rule === "CS-01" ? `${v.length} cell${v.length > 1 ? "s" : ""}, steepest ${worst.toFixed(1)}° (limit ${limTxt(lim)}°${marginOn() ? ", incl. safety margin" : ""})` : r.rule === "CS-02" ? `${v.length} cell${v.length > 1 ? "s" : ""}, roughest ${worst.toFixed(2)} m (limit 0.35 m)` : r.rule === "HZ-1" ? `${v.length} route cell${v.length > 1 ? "s" : ""} inside ${hzWhat(v)}` : `${v.length} finding${v.length > 1 ? "s" : ""}`;
       el.className = "verdict nogo"; el.innerHTML = `<b class="v">NO-GO</b>${r.rule} ${RULE_NAMES[r.rule]}: ${detail}.${r.rules_failed.length > 1 ? ` Also ${r.rules_failed.slice(1).join(", ")}.` : ""}<small>${resTxt} The planner may propose it; the validator decides.${lim > PROFILE.maxSlope ? " " + CAUTION : ""}</small>`; }
   }
   // W4 sound (Web Audio, generated, off by default). What the astronaut hears is mostly the suit: fan hum and breathing,
@@ -993,6 +1003,9 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     if (SLOPE[startCell] > maxS || SLOPE[endCell] > maxS) {
       route = null; drawTexture(); clearStats();
       $("status").className = "status warn"; $("status").textContent = `That point sits on ground steeper than ${maxS}°. Pick a flatter spot or raise the limit.`; return; }
+    if (!Array.isArray(pre) && (HZC.has(startCell) || HZC.has(endCell))) {
+      route = null; drawTexture(); clearStats();
+      $("status").className = "status warn"; $("status").textContent = `That ${HZC.has(startCell) ? "start" : "end"} point is inside a live hazard zone (${hzWhat([{ val: HZC.has(startCell) ? startCell : endCell }])}). Pick a point outside the red circle.`; return; }
     const t0 = performance.now(); route = Array.isArray(pre) ? pre : astar(startCell, endCell, maxS); const ms = performance.now() - t0;
     drawTexture();
     if (!route) { clearStats(); $("status").className = "status warn"; $("status").textContent = `No path stays under ${maxS}°. Raise the slope limit or move a point.`; return; }
@@ -1546,21 +1559,24 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   const zcv = document.createElement("canvas"); zcv.id = "zoneCv"; zcv.setAttribute("aria-hidden", "true"); view.appendChild(zcv);
   { const zx = zcv.getContext("2d"), v3 = new THREE.Vector3(); let key = "";
     window.__zoneDraw = function () {
-      const Zn = window.MWZones, walking = !!(window.__walk && window.__walk.on), show = L.zones && Zn && Zn.ready && !walking;
+      const Zn = window.MWZones, walking = !!(window.__walk && window.__walk.on), show = L.zones && Zn && Zn.ready && !walking, hz = !walking && LIVE.zones.length;
       const cw = view.clientWidth, ch = view.clientHeight, e = camera.matrixWorld.elements;
-      const k = show ? cw + "x" + ch + "|" + EX + "|" + ZN.sel + "|" + e[12].toFixed(1) + e[13].toFixed(1) + e[14].toFixed(1) + e[0].toFixed(4) + e[2].toFixed(4) + e[4].toFixed(4) + e[6].toFixed(4) + e[8].toFixed(4) + e[10].toFixed(4) : "off";
+      const k = show || hz ? LIVE.zones.length + "|" + cw + "x" + ch + "|" + EX + "|" + ZN.sel + "|" + e[12].toFixed(1) + e[13].toFixed(1) + e[14].toFixed(1) + e[0].toFixed(4) + e[2].toFixed(4) + e[4].toFixed(4) + e[6].toFixed(4) + e[8].toFixed(4) + e[10].toFixed(4) : "off";
       if (k === key) return; key = k;
       const dpr = Math.min(devicePixelRatio, 2); if (zcv.width !== Math.round(cw * dpr) || zcv.height !== Math.round(ch * dpr)) { zcv.width = Math.round(cw * dpr); zcv.height = Math.round(ch * dpr); }
-      zx.setTransform(dpr, 0, 0, dpr, 0, 0); zx.clearRect(0, 0, cw, ch); if (!show) return;
+      zx.setTransform(dpr, 0, 0, dpr, 0, 0); zx.clearRect(0, 0, cw, ch); if (!show && !hz) return;
       zx.textBaseline = "middle"; zx.textAlign = "center"; zx.lineJoin = "round";
       const proj = (gx, gy) => { const [x, z] = toWorld(gx, gy); v3.set(x, hAt(gx, gy) + 8, z).project(camera); return v3.z < 1 && v3.z > -1 ? [(v3.x + 1) / 2 * cw, (1 - v3.y) / 2 * ch] : null; };
-      for (let zr = 0; zr < Zn.rows; zr++) for (let zc = 0; zc < Zn.cols; zc++) {
+      if (show) for (let zr = 0; zr < Zn.rows; zr++) for (let zc = 0; zc < Zn.cols; zc++) {
         const gx = (Zn.edge(zc) + Math.min(W, Zn.edge(zc + 1))) / 2 - 0.5, gy = (Zn.edge(zr) + Math.min(H, Zn.edge(zr + 1))) / 2 - 0.5, p = proj(gx, gy), q = proj(gx + Zn.per, gy); if (!p || !q) continue;
         const zonePx = Math.hypot(q[0] - p[0], q[1] - p[1]); if (zonePx < 30 || p[0] < -30 || p[1] < -20 || p[0] > cw + 10 || p[1] > ch + 10) continue;
         const fs = Math.max(10, Math.min(15, zonePx * 0.16)), sel = Zn.id(zc, zr) === ZN.sel, txt = Zn.name(zc, zr);
         zx.font = `700 ${fs}px "IBM Plex Mono", ui-monospace, Consolas, monospace`;
         zx.strokeStyle = "rgba(12,8,5,0.85)"; zx.lineWidth = 3.2; zx.strokeText(txt, p[0], p[1]);
         zx.fillStyle = sel ? "#6fd8ea" : "rgba(255,244,225,0.88)"; zx.fillText(txt, p[0], p[1]); }
+      for (const z of LIVE.zones) { const p = proj(z.x, z.y); if (!p) continue; const txt = `${HZ_NAME[z.kind] || z.kind} (${z.label})`;   // live hazard zones
+        zx.font = '700 13px "IBM Plex Sans", system-ui, sans-serif'; zx.strokeStyle = "rgba(12,8,5,0.9)"; zx.lineWidth = 3.5; zx.strokeText(txt, p[0], p[1] - 18);
+        zx.fillStyle = "#ffb4a6"; zx.fillText(txt, p[0], p[1] - 18); }
     };
   }
   window.__zones = { init: zoneInit, summary: zoneSummary, target: zoneTarget, open: openZone, state: ZS, mask: zoneMask, reach: zoneReach };
@@ -2454,8 +2470,8 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
   // ---------- live data hook: window.MWTwin.ingest(record) ----------
   // Record schema is a shared contract (feed agent): id, type rad|photo|weather|hazard, source, observed_utc, available_utc,
   // ingested_utc, sol, label measured|modelled|simulated, one payload object named after the type, provenance {url, sha256, method}.
-  const LIVE_TYPES = ["rad", "photo", "weather", "hazard"], LIVE_LABELS = ["measured", "modelled", "simulated"], HZ_KINDS = ["dust_storm", "cme", "sep"];
-  const HZ_NAME = { dust_storm: "dust storm", cme: "CME", sep: "SEP event" };
+  const LIVE_TYPES = ["rad", "photo", "weather", "hazard"], LIVE_LABELS = ["measured", "modelled", "simulated"], HZ_KINDS = ["dust_storm", "cme", "sep", "obstacle"];
+  const HZ_NAME = { dust_storm: "dust storm", cme: "CME", sep: "SEP event", obstacle: "new obstacle" };
   const LCOL = { measured: "#9fd27a", modelled: "#6fd8ea", simulated: "#e5a0ff" };
   const isNum = v => typeof v === "number" && Number.isFinite(v), isStr = v => typeof v === "string" && v.length > 0, isTime = v => isStr(v) && Number.isFinite(Date.parse(v));
   const lTag = l => `<span class="tg" style="color:${LCOL[l] || "var(--muted)"};border-color:${LCOL[l] || "var(--line)"}">${esc(l)}</span>`;
@@ -2509,10 +2525,24 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
       placePins(); if (WK.built && WK.addPhoto) WK.addPhoto(LIVE.photos[k]);
     } else {
       const h = r.hazard, ctr = h.center, inRoi = ctr && ctr.lat >= ROI.minlat && ctr.lat <= ROI.maxlat && ctr.lon >= ROI.westernlon && ctr.lon <= ROI.easternlon;
-      if (inRoi) { const [gx, gy] = cellOfLL(ctr.lat, ctr.lon); LIVE.zones.push({ id: r.id, x: gx, y: gy, rc: h.radius_km * 1000 / CELL, kind: h.kind, label: r.label }); drawTexture(); }
+      if (inRoi) { const [gx, gy] = cellOfLL(ctr.lat, ctr.lon); LIVE.zones.push({ id: r.id, x: gx, y: gy, rc: h.radius_km * 1000 / CELL, kind: h.kind, label: r.label, end: h.end_utc || null }); hzChanged(r.id); }
       else LD.banners.push({ id: r.id, kind: h.kind, start: h.start_utc, end: h.end_utc, label: r.label, note: h.note, where: h.affects_site ? "affects the site" : "does not affect the site" }), liveBanners();
     }
   }
+  // which zone(s) a set of violating cells falls in, for the verdict text
+  function hzWhat(v) { const ks = new Set(); for (const x of v) { const c = x.val, cx = c % W, cy = (c / W) | 0;
+      for (const z of LIVE.zones) if (Math.hypot(cx - z.x, cy - z.y) <= Math.max(0.5, z.rc)) ks.add(`the ${HZ_NAME[z.kind]} zone (${z.label})`); }
+    return ks.size ? [...ks].join(" and ") : "a live hazard zone"; }
+  // A zone arrived or was withdrawn: rebuild the blocked cells and re-plan the shown route if it now crosses a zone
+  // (or, after a withdrawal, so it can take the shorter way again).
+  function hzChanged(id, withdrawn) {
+    hzRebuild(); drawTexture(); if (!route || startCell == null || endCell == null) return;
+    const hit = route.some(c => HZC.has(c)); if (!hit && !withdrawn) { renderVerdict(); return; }
+    const before = route.length; replanCurrent();
+    const z = LIVE.zones.find(q => q.id === id), what = z ? `the ${HZ_NAME[z.kind]} zone (${z.label})` : "the withdrawn hazard zone";
+    if (route && $("status").className === "status") $("status").textContent = withdrawn ? `Hazard ${id} withdrawn: route re-planned (${before} -> ${route.length} cells).` : `Re-planned around ${what} from record ${id}: ${before} -> ${route.length} cells.`;
+  }
+  function retract(id) { const k = LIVE.zones.findIndex(z => z.id === id); if (k < 0) return false; LIVE.zones.splice(k, 1); LD.ids.delete(id); hzChanged(id, true); return true; }
   function ingest(r) {
     const why = validateRecord(r);
     if (why) { LD.rejected.push({ id: r && r.id, reason: why }); if (LD.rejected.length > 200) LD.rejected.shift(); return { ok: false, applied: false, reason: why }; }
@@ -2522,7 +2552,7 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
     return { ok: true, applied: true };
   }
   { const stub = window.MWTwin, queued = stub && stub._q ? stub._q.slice() : [];
-    window.MWTwin = { ingest, rejected: LD.rejected, stats: () => ({ records: LD.n, newest: LD.newest, rejected: LD.rejected.length }), ready: true };
+    window.MWTwin = { ingest, retract, hazardCells: () => HZC.size, rejected: LD.rejected, stats: () => ({ records: LD.n, newest: LD.newest, rejected: LD.rejected.length }), ready: true };
     liveLine(); queued.forEach(ingest); }
   const ingestAny = x => { const rec = x && x.record ? x.record : x; return ingest(rec); };
   // sources: feed.json (probed from a worker so a missing file is not a console error), IndexedDB "marswalk-feed" / "records", BroadcastChannel "marswalk-feed"

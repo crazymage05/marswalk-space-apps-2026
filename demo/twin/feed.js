@@ -229,9 +229,9 @@ function checkRecord(r, n, label, name, hash) {
     if (!(typeof b.x === 'number' && b.x >= 0 && b.x <= GRID.w && typeof b.y === 'number' && b.y >= 0 && b.y <= GRID.h)) return { err: e('photo.x and photo.y must be inside the ' + GRID.w + ' x ' + GRID.h + ' grid.') };
   }
   if (r.type === 'hazard') {
-    if (['dust_storm', 'cme', 'sep'].indexOf(b.kind) < 0) return { err: e('hazard.kind must be dust_storm, cme or sep.') };
-    if (pd(b.start_utc) === null || pd(b.end_utc) === null) return { err: e('hazard.start_utc and end_utc must be dates.') };
-    if (pd(b.end_utc) < pd(b.start_utc)) return { err: e('hazard.end_utc is before start_utc.') };
+    if (['dust_storm', 'cme', 'sep', 'obstacle'].indexOf(b.kind) < 0) return { err: e('hazard.kind must be dust_storm, cme, sep or obstacle.') };
+    if (pd(b.start_utc) === null || (b.end_utc != null && pd(b.end_utc) === null)) return { err: e('hazard.start_utc must be a date; end_utc a date or null (no end known yet).') };
+    if (b.end_utc != null && pd(b.end_utc) < pd(b.start_utc)) return { err: e('hazard.end_utc is before start_utc.') };
     if (typeof b.radius_km !== 'number' || b.radius_km < 0) return { err: e('hazard.radius_km must be a number >= 0.') };
     if (b.center != null && !(typeof b.center.lat === 'number' && typeof b.center.lon === 'number')) return { err: e('hazard.center must be null or {lat, lon}.') };
     if (typeof b.affects_site !== 'boolean') return { err: e('hazard.affects_site must be true or false.') };
