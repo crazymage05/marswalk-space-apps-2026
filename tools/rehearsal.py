@@ -33,7 +33,7 @@ with sync_playwright() as p:
     t0 = time.time()
 
     def entry():
-        pg.goto(f"{BASE}/index.html"); pg.wait_for_selector("text=Validation scoreboard", timeout=20000); pg.wait_for_timeout(800)
+        pg.goto(f"{BASE}/index.html?hub"); pg.wait_for_selector("text=Validation scoreboard", timeout=20000); pg.wait_for_timeout(800)
         rows = pg.evaluate("() => document.querySelectorAll('table tbody tr, .sb-card, [data-row]').length")
         pg.screenshot(path=os.path.join(OUT, "0_entry.png")); return f"scoreboard elements {rows}"
     beat("0:00 entry page (offline)", entry)

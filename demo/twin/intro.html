@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARSWALK</title>
+<meta name="description" content="Plan a safe spacewalk on Mars from NASA data, check it against flight rules, then walk it. NASA Space Apps Challenge 2026.">
+<meta property="og:title" content="MARSWALK: plan it, check it, walk it">
+<meta property="og:description" content="A walkable Mars twin and spacewalk route planner built on NASA orbital and rover data, at Curiosity's 2025 boxwork site in Gale crater.">
+<meta property="og:image" content="intro/shot_walk.jpg">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* Intro film: always dark (cinema), built on the shared --mw-glass tokens so it matches the dashboards' overlays. */
+:root { --fg: #f6efe8; --mut: #e2d6cc; --acc: #f0a674; --line: rgba(255, 236, 224, .16); --glass: rgba(18, 12, 9, .62); }
+html, body { margin: 0; height: 100%; background: #050304; color: var(--fg); font-family: var(--mw-sans); overflow: hidden; }
+#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+body.nogl { background: #050304 url("intro/mars_globe.jpg") center / cover no-repeat; }
+.vignette { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(0,0,0,.65) 100%); }
+.top { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; z-index: 5; }
+.brand { font: 700 15px var(--mw-sans); letter-spacing: .14em; }
+.brand b { color: var(--acc); font-weight: 700; }
+.pill { font: 600 13px var(--mw-sans); color: var(--fg); background: var(--glass); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer;
+        -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: transform .25s var(--mw-ease), border-color .25s; text-decoration: none; }
+.pill:hover { border-color: var(--acc); transform: translateY(-1px); }
+.pill.main { background: var(--acc); color: #1d120c; border-color: transparent; font-size: 15px; padding: 13px 26px; }
+.stage { position: fixed; inset: 0; perspective: 1400px; z-index: 3; pointer-events: none; }
+.beat { position: absolute; inset: 0; display: grid; align-content: center; padding: 88px max(24px, 7vw) 110px; box-sizing: border-box;
+        opacity: 0; transform: translateZ(-260px) rotateX(8deg); transition: opacity .9s var(--mw-ease), transform 1.1s var(--mw-ease); pointer-events: none; }
+.beat.on { opacity: 1; transform: none; pointer-events: auto; }
+.beat.gone { opacity: 0; transform: translateZ(160px) rotateX(-6deg); }
+.kick { font: 600 12px var(--mw-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--acc); margin: 0 0 14px; }
+h1, h2 { margin: 0; font-weight: 700; letter-spacing: -.02em; line-height: 1.04; text-wrap: balance; }
+h1 { font-size: clamp(38px, 6.4vw, 92px); }
+h2 { font-size: clamp(30px, 4.4vw, 62px); }
+.lede { font-size: clamp(16px, 1.6vw, 21px); line-height: 1.5; color: var(--mut); max-width: 40em; margin: 18px 0 0; }
+.lede b { color: #ffd2b3; font-weight: 600; }
+.row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+.left { max-width: min(40vw, 620px); background: rgba(10, 6, 4, .58); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 20px; padding: 26px 30px; }
+.credit { font: 500 11px var(--mw-mono); color: var(--mut); opacity: .85; margin-top: 10px; }
+/* 3D picture frames */
+.frames { position: absolute; right: max(24px, 3vw); top: 50%; width: min(43vw, 720px); height: min(58vh, 520px); transform: translateY(-50%) rotateY(-7deg); transform-style: preserve-3d;
+          display: grid; gap: 14px; }
+.frames.cols { grid-template-columns: minmax(0, .5fr) minmax(0, 1fr); }
+.frames.rows { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+.frames .frame { position: relative; margin: 0; min-height: 0; }
+.frame { position: absolute; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8), 0 0 0 1px var(--line); background: #111;
+         transition: transform 1.4s var(--mw-ease), opacity 1s; }
+.frame.inset { position: absolute; }
+.frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.frame figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 12px; font: 500 11px var(--mw-mono); color: var(--mut); background: linear-gradient(transparent, rgba(0,0,0,.75)); }
+.beat:not(.on) .frame { transform: translateZ(-300px) !important; opacity: 0; }
+.beat.on .frames .frame:nth-child(2) { transition-delay: .15s; }
+/* carousel of Navcam photos */
+.ring { position: absolute; right: max(24px, 6vw); top: 50%; width: 300px; height: 220px; margin-top: -110px; transform-style: preserve-3d; animation: spin 40s linear infinite; }
+.ring .frame { width: 300px; height: 220px; }
+@keyframes spin { to { transform: rotateY(-360deg); } }
+.wrapR { position: absolute; right: 0; top: 0; bottom: 0; width: 48vw; perspective: 1100px; }
+/* data cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 26px; max-width: 1100px; transform-style: preserve-3d; }
+.card { background: var(--glass); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+        opacity: 0; transform: translateZ(-300px) rotateX(30deg); transition: opacity .7s, transform .9s var(--mw-ease); }
+.beat.on .card { opacity: 1; transform: none; }
+.card b { display: block; font-size: 15px; margin-bottom: 4px; }
+.card span { font-size: 12.5px; color: var(--mut); line-height: 1.4; }
+.card i { font: 600 10.5px var(--mw-mono); font-style: normal; color: var(--acc); letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+/* video */
+.vid { width: min(86vw, 1100px); aspect-ratio: 16 / 9; margin: 22px auto 0; border-radius: 16px; overflow: hidden; box-shadow: 0 40px 100px -30px #000, 0 0 0 1px var(--line); background: #000; }
+.vid video { width: 100%; height: 100%; display: block; }
+.center { text-align: center; justify-items: center; }
+/* bottom controls */
+.ctl { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; align-items: center; gap: 12px; padding: 16px 24px 20px; justify-content: center; }
+.dots { display: flex; gap: 8px; margin: 0 8px; }
+.dots button { width: 9px; height: 9px; padding: 0; border-radius: 50%; border: 0; background: rgba(255,255,255,.28); cursor: pointer; transition: background .3s, transform .3s; }
+.dots button.on { background: var(--acc); transform: scale(1.35); }
+.bar { position: fixed; left: 0; bottom: 0; height: 3px; background: var(--acc); width: 0; z-index: 7; }
+@media (max-width: 820px) {
+  .left { max-width: none; }
+  .beat { align-content: start; padding-top: 84px; }
+  .frames, .wrapR { position: relative; right: auto; top: auto; transform: none; width: 100%; height: 28vh; margin-top: 14px; }
+  .credit { display: none; }
+  .ring { right: auto; left: 50%; margin-left: -120px; width: 240px; height: 176px; margin-top: -88px; }
+  .ring .frame { width: 240px; height: 176px; }
+  .cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .frame.inset { display: none; }
+  .card { padding: 10px 12px; } .card span { font-size: 11.5px; }
+  .ctl { gap: 8px; padding: 12px; } .pill { padding: 8px 12px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .ring { animation: none; } .beat, .card, .frame { transition: opacity .3s !important; transform: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette"></div>
+<div class="top"><div class="brand">MARS<b>WALK</b></div><a class="pill" id="skip" href="index.html?hub">Skip intro</a></div>
+
+<main class="stage" id="stage" aria-live="polite">
+  <!-- 0: the question -->
+  <section class="beat" data-auto="0" data-shot="globe">
+    <div class="left">
+      <p class="kick">NASA Space Apps Challenge 2026 · Interplanetary Survival Guide: Martian Map</p>
+      <h1>Have you ever seen Mars up close?</h1>
+      <div class="row"><button class="pill main" data-answer="yes" type="button">Yes</button><button class="pill main" data-answer="no" type="button">No</button></div>
+    </div>
+  </section>
+  <!-- 1: answer + fly to Gale -->
+  <section class="beat" data-auto="8" data-shot="gale">
+    <div class="left">
+      <p class="kick">Gale crater · 4.8° S, 137.4° E</p>
+      <h2 id="answerLine">Here is where we are going.</h2>
+      <p class="lede">A 154 km crater with a 5 km mountain in the middle, <b>Mount Sharp</b>. NASA's Curiosity rover has been driving up it since August 2012. In 2025 it reached the <b>boxwork</b>: a maze of ridges left by groundwater.</p>
+      <p class="credit">Globe: Viking MDIM 2.1 colour mosaic (NASA/JPL-Caltech/USGS, via JPL Mars Trek) with MOLA relief (NASA/GSFC/MOLA Science Team, USGS). Stars: NASA/GSFC Scientific Visualization Studio, Deep Star Maps 2020.</p>
+    </div>
+    <figure class="frame inset" style="right:max(24px,4vw);bottom:96px;width:min(24vw,380px);aspect-ratio:16/9;transform:rotateY(-10deg)"><img src="intro/gale_mount_sharp.jpg" alt="Oblique view of Gale crater with Mount Sharp"><figcaption>Gale crater and Mount Sharp, oblique view. PIA15292, NASA/JPL-Caltech/ESA/DLR/FU Berlin/MSSS</figcaption></figure>
+  </section>
+  <!-- 2: from orbit -->
+  <section class="beat" data-auto="9" data-shot="aside">
+    <div class="left">
+      <p class="kick">From orbit</p>
+      <h2>A camera that sees things the size of a table.</h2>
+      <p class="lede">NASA's Mars Reconnaissance Orbiter photographs this ground with HiRISE at <b>25 cm per pixel</b> and measures its height in 3D at 1 m. From up there the boxwork looks like a spider web: ridges where groundwater once hardened the rock.</p>
+      <p class="credit">Left: HiRISE ESP_094058_1750, enhanced colour, our study area outlined. Right: HiRISE view of the boxwork, PIA26306. NASA/JPL-Caltech/University of Arizona</p>
+    </div>
+    <div class="frames cols">
+      <figure class="frame"><img src="intro/hirise_strip.jpg" alt="HiRISE colour strip over the study area"><figcaption>Our study area, outlined</figcaption></figure>
+      <figure class="frame"><img src="intro/hirise_boxwork.jpg" alt="HiRISE view of the boxwork ridges on Mount Sharp"><figcaption>The boxwork from orbit</figcaption></figure>
+    </div>
+  </section>
+  <!-- 3: from the ground -->
+  <section class="beat" data-auto="10" data-shot="aside">
+    <div class="left">
+      <p class="kick">From the ground</p>
+      <h2>And from Curiosity, standing on it.</h2>
+      <p class="lede">In 2025 the rover drove into the boxwork and photographed it in colour with its Mastcam. Inside MARSWALK you also see its <b>Navcam photos and 3D scans</b>, placed where each one was taken.</p>
+      <p class="credit">Top: boxwork survey, Sept 2025, PIA26693. Bottom: first 360° view of the boxwork, May 2025, PIA26559. Curiosity Mastcam, NASA/JPL-Caltech/MSSS</p>
+    </div>
+    <div class="frames rows">
+      <figure class="frame"><img src="intro/mastcam_boxwork.jpg" alt="Curiosity Mastcam panorama of the boxwork ridges" style="object-position:50% 60%"><figcaption>Boxwork ridges, Mastcam, Sept 2025</figcaption></figure>
+      <figure class="frame"><img src="intro/mastcam_360.jpg" alt="Curiosity Mastcam view of the boxwork with rover tracks"><figcaption>First 360° view of the boxwork, May 2025</figcaption></figure>
+    </div>
+  </section>
+  <!-- 4: the data -->
+  <section class="beat" data-auto="11" data-shot="far">
+    <div>
+      <p class="kick">The data</p>
+      <h2>Seven kinds of NASA data on one map.</h2>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+  <!-- 5: the question we answer -->
+  <section class="beat" data-auto="9" data-shot="aside">
+    <div class="left">
+      <p class="kick">The question</p>
+      <h2>Where can an astronaut walk safely?</h2>
+      <p class="lede">MARSWALK plans the route, checks every 4 m of it against flight rules (slope, boulders, radiation, time, energy), and then lets you <b>walk it in first person</b>. When new data arrives, the route changes with it.</p>
+    </div>
+    <div class="frames rows">
+      <figure class="frame"><img src="intro/shot_route.jpg" alt="Planned route with GO verdict"><figcaption>Route, GO verdict and why</figcaption></figure>
+      <figure class="frame"><img src="intro/shot_walk.jpg" alt="First-person walk with helmet HUD"><figcaption>Walk it, suit limits in the visor</figcaption></figure>
+    </div>
+  </section>
+  <!-- 6: the 30 s demo -->
+  <section class="beat center" data-auto="video" data-shot="far">
+    <div>
+      <p class="kick">30 seconds</p>
+      <h2>See it working.</h2>
+      <div class="vid"><video id="vid" src="intro/demo30.mp4" poster="intro/demo30_poster.jpg" playsinline muted controls preload="metadata"></video></div>
+    </div>
+  </section>
+  <!-- 7: enter -->
+  <section class="beat center" data-auto="0" data-shot="far">
+    <div>
+      <p class="kick">Plan it. Check it. Walk it.</p>
+      <h1>Your turn.</h1>
+      <div class="row" style="justify-content:center"><a class="pill main" href="index.html?hub" id="enter">Enter MARSWALK</a><button class="pill" type="button" id="again">Watch again</button></div>
+    </div>
+  </section>
+</main>
+
+<nav class="ctl" aria-label="Intro controls">
+  <button class="pill" id="prev" type="button" aria-label="Previous">‹ Back</button>
+  <div class="dots" id="dots"></div>
+  <button class="pill" id="play" type="button" aria-pressed="true">Pause</button>
+  <button class="pill" id="next" type="button" aria-label="Next">Next ›</button>
+</nav>
+<div class="bar" id="bar"></div>
+
+<script src="vendor/three-0.128.0/three.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var store = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var beats = [].slice.call(document.querySelectorAll(".beat")), cur = -1, playing = true, t0 = 0, answered = false;
+
+  // ---- content
+  var cards = [
+    ["Topographic", "HiRISE stereo terrain", "MRO · 1 m height model"], ["Optical", "HiRISE and CTX images, Navcam", "MRO and Curiosity"],
+    ["Spectral", "CRISM minerals", "MRO · 11 mineral groups"], ["Thermal", "THEMIS dawn infrared", "Mars Odyssey · loose vs rocky ground"],
+    ["Radiation", "RAD dose rate, DONKI storms", "Curiosity and NASA CCMC"], ["Atmospheric", "REMS weather, dust", "Curiosity"],
+    ["Chemical", "ChemCam and APXS", "Curiosity · 349 rock analyses"], ["Challenge resources", "All five, used", "Mars Trek · USGS geology · Perseverance images · Worldview · NASA route map"]];
+  $("cards").innerHTML = cards.map(function (c, i) { return '<div class="card" style="transition-delay:' + (0.12 * i).toFixed(2) + 's"><i>' + c[0] + "</i><b>" + c[1] + "</b><span>" + c[2] + "</span></div>"; }).join("");
+
+  // ---- sequence
+  var dots = $("dots");
+  beats.forEach(function (b, i) { var d = document.createElement("button"); d.type = "button"; d.setAttribute("aria-label", "Part " + (i + 1)); d.onclick = function () { go(i); }; dots.appendChild(d); });
+  function go(i) {
+    i = Math.max(0, Math.min(beats.length - 1, i)); if (i === cur) return;
+    beats.forEach(function (b, k) { b.classList.toggle("on", k === i); b.classList.toggle("gone", k < i); b.setAttribute("aria-hidden", k === i ? "false" : "true"); });
+    [].forEach.call(dots.children, function (d, k) { d.classList.toggle("on", k === i); });
+    var v = $("vid"); if (beats[i].dataset.auto === "video") { try { v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} } else if (!v.paused) v.pause();
+    cur = i; t0 = performance.now(); shot(beats[i].dataset.shot);
+    if (i === beats.length - 1) store("mw_intro_seen", "1");
+  }
+  $("vid").addEventListener("ended", function () { if (playing && beats[cur].dataset.auto === "video") go(cur + 1); });
+  [].forEach.call(document.querySelectorAll("[data-answer]"), function (b) {
+    b.onclick = function () { answered = true;
+      $("answerLine").textContent = b.dataset.answer === "yes" ? "Then you have seen it from far away. Let's go down to the ground." : "Few people have. Let's go and look.";
+      go(1); };
+  });
+  $("next").onclick = function () { if (cur === 0 && !answered) { answered = true; $("answerLine").textContent = "Let's go and look."; } go(cur + 1); };
+  $("prev").onclick = function () { go(cur - 1); };
+  $("again").onclick = function () { answered = false; go(0); };
+  $("play").onclick = function () { playing = !playing; t0 = performance.now(); this.textContent = playing ? "Pause" : "Play"; this.setAttribute("aria-pressed", String(playing)); };
+  $("skip").onclick = $("enter").onclick = function () { store("mw_intro_seen", "1"); };
+  addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight" || e.key === "PageDown") { $("next").click(); e.preventDefault(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { go(cur - 1); e.preventDefault(); }
+    else if (e.key === "Escape") { store("mw_intro_seen", "1"); location.href = "index.html?hub"; }
+  });
+  function autoTick() {
+    var b = beats[cur], secs = b ? +b.dataset.auto : 0, bar = $("bar");
+    if (b && secs > 0) { var f = (performance.now() - t0) / (secs * 1000); bar.style.width = Math.min(100, f * 100) + "%"; if (playing && f >= 1) go(cur + 1); else if (!playing) t0 += 0; }
+    else if (b && b.dataset.auto === "video") { var v = $("vid"); bar.style.width = (v.duration ? 100 * v.currentTime / v.duration : 0) + "%"; }
+    else bar.style.width = "0";
+    requestAnimationFrame(autoTick);
+  }
+  var pausedAt = 0;   // freeze the auto timer while paused
+  $("play").addEventListener("click", function () { if (!playing) pausedAt = performance.now(); else if (pausedAt) { t0 += performance.now() - pausedAt; pausedAt = 0; } });
+
+  // ---- 3D: stars + Mars globe (three.js r128). Camera cues per beat, eased; the globe turns Gale to the camera on "gale".
+  var shot = function () {};
+  (function initGL() {
+    var cv = $("gl"), renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: false }); } catch (e) { renderer = null; }
+    if (!renderer || !window.THREE) { document.body.classList.add("nogl"); return; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+    var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(35, 1, 0.05, 2000);
+    // stars: fixed seed so every visit looks the same
+    var n = 4000, pos = new Float32Array(n * 3), seed = 7, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (var i = 0; i < n; i++) { var u = rnd() * 2 - 1, th = rnd() * 6.2832, r = 600, s = Math.sqrt(1 - u * u); pos[3 * i] = r * s * Math.cos(th); pos[3 * i + 1] = r * u; pos[3 * i + 2] = r * s * Math.sin(th); }
+    var sg = new THREE.BufferGeometry(); sg.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 1.3, sizeAttenuation: false, transparent: true, opacity: 0.35 })));
+    var TL = new THREE.TextureLoader(), aniso = renderer.capabilities.getMaxAnisotropy();
+    var tex = TL.load(innerWidth < 700 ? "intro/mars_globe.jpg" : "intro/mars_4k.jpg"); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = aniso;
+    var nrm = TL.load("intro/mars_normal.png"); nrm.anisotropy = aniso;   // MOLA elevation, 12x exaggerated, tangent space +Y north
+    var mars = new THREE.Mesh(new THREE.SphereGeometry(1, 160, 120), new THREE.MeshStandardMaterial({ map: tex, normalMap: nrm, normalScale: new THREE.Vector2(0.8, 0.8), roughness: 1, metalness: 0 }));
+    var sky = TL.load("intro/stars_4k.jpg"); sky.encoding = THREE.sRGBEncoding;   // NASA SVS Deep Star Maps 2020, celestial coordinates
+    var skyM = new THREE.Mesh(new THREE.SphereGeometry(900, 64, 32), new THREE.MeshBasicMaterial({ map: sky, side: THREE.BackSide, toneMapped: false, color: new THREE.Color(0.85, 0.85, 0.85) }));
+    skyM.scale.x = -1; scene.add(skyM);
+    var spin = new THREE.Group(); spin.add(mars); scene.add(spin);
+    // thin atmosphere rim (fresnel), Mars-dust orange
+    var atm = new THREE.Mesh(new THREE.SphereGeometry(1.012, 96, 64), new THREE.ShaderMaterial({ transparent: true, side: THREE.BackSide, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: "varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(normalMatrix*normal); vec4 mv = modelViewMatrix*vec4(position,1.); vP = mv.xyz; gl_Position = projectionMatrix*mv; }",
+      fragmentShader: "varying vec3 vN; varying vec3 vP; void main(){ float f = pow(1.0 - abs(dot(normalize(-vP), vN)), 5.0); gl_FragColor = vec4(vec3(0.95,0.6,0.4)*f*0.7, f * 0.6); }" }));
+    scene.add(atm);
+    var sun = new THREE.DirectionalLight(0xfff1e0, 2.2); sun.position.set(-4, 2, 5); scene.add(sun); scene.add(new THREE.AmbientLight(0x2a1b16, 0.6));
+    // Gale marker (lat -4.8, lon 137.4)
+    var GLAT = -4.8 * Math.PI / 180, GLON = 137.4 * Math.PI / 180;
+    // three.js SphereGeometry with an equirectangular map whose u=0 is lon -180: x = cos(lat)cos(lon), y = sin(lat), z = -cos(lat)sin(lon)
+    var gp = new THREE.Vector3(Math.cos(GLAT) * Math.cos(GLON), Math.sin(GLAT), -Math.cos(GLAT) * Math.sin(GLON));
+    var mk = new THREE.Mesh(new THREE.RingGeometry(0.018, 0.026, 48), new THREE.MeshBasicMaterial({ color: 0xf0a674, transparent: true, opacity: 0, side: THREE.DoubleSide, depthTest: true }));
+    mk.position.copy(gp).multiplyScalar(1.004); mk.lookAt(gp.clone().multiplyScalar(2)); mars.add(mk);
+    // cues: camera distance, x offset (globe to one side), spin target
+    window.__intro = { spin: spin, mk: mk, cam: function () { return cam; }, gp: gp };   // test hook
+    var S = { dist: 3.6, x: 0, y: 0, rot: 0, auto: true, mk: 0 }, G = Object.assign({}, S);
+    var faceGale = -Math.atan2(gp.x, gp.z);   // rotation about Y that brings Gale to the camera (+Z)
+    shot = function (name) {
+      if (name === "globe") Object.assign(G, { dist: 4.9, x: 1.25, y: 0, auto: true, mk: 0 });
+      else if (name === "gale") Object.assign(G, { dist: 2.35, x: 0.24, y: 0.02, auto: false, rot: faceGale, mk: 1 });
+      else if (name === "aside") Object.assign(G, { dist: 6.5, x: -2.7, y: 1.35, auto: true, mk: 0 });
+      else Object.assign(G, { dist: 10, x: 0, y: 2.1, auto: true, mk: 0 });
+      if (reduce) Object.assign(S, G);
+    };
+    function size() { var w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.fov = w < h ? 52 : 35; cam.updateProjectionMatrix(); }
+    addEventListener("resize", size); size();
+    var last = performance.now(), visible = true; document.addEventListener("visibilitychange", function () { visible = !document.hidden; });
+    (function loop(now) {
+      requestAnimationFrame(loop); if (!visible) { last = now; return; }
+      var dt = Math.min(0.05, (now - last) / 1000); last = now; var k = 1 - Math.exp(-2.2 * dt);
+      S.dist += (G.dist - S.dist) * k; S.x += (G.x - S.x) * k; S.y += (G.y - S.y) * k; S.mk += (G.mk - S.mk) * k;
+      if (G.auto) { if (!reduce) spin.rotation.y += dt * 0.06; S.rot = spin.rotation.y; }
+      else { var d = ((G.rot - spin.rotation.y + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; spin.rotation.y += d * k; }
+      mk.material.opacity = S.mk * (0.75 + 0.25 * Math.sin(now / 300));
+      var mob = innerWidth < innerHeight;
+      cam.position.set(mob ? 0 : -S.x, S.y + (mob ? -0.5 : 0) * (S.dist > 3 ? 1 : 0), S.dist); cam.lookAt(mob ? 0 : -S.x, S.y + (mob && S.dist > 3 ? -0.5 : 0), 0);
+      renderer.render(scene, cam);
+    })(performance.now());
+  })();
+
+  go(0); requestAnimationFrame(autoTick);
+})();
+</script>
+</body>
+</html>

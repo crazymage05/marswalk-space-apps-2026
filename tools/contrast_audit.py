@@ -45,7 +45,7 @@ JS = r"""() => {
 out = {}
 with sync_playwright() as p:
     b = p.chromium.launch(channel="chrome", headless=True)
-    for page in ("index.html", "twin.html?notour", "mission.html"):
+    for page in ("index.html?hub", "twin.html?notour", "mission.html"):
         for theme in ("day", "dusk"):
             for w, h in ((1440, 900), (400, 860)):
                 ctx = b.new_context(viewport={"width": w, "height": h}); pg = ctx.new_page()

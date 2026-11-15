@@ -68,7 +68,7 @@ optional safety margin that plans 3.4 deg below the slope limit to cover the mea
 python -m http.server 8765 --bind 127.0.0.1 -d demo/twin
 ```
 
-Then open http://127.0.0.1:8765/index.html in desktop Chrome or Edge. The twin is `twin.html` and mission control is
+Then open http://127.0.0.1:8765/index.html in desktop Chrome or Edge. A first visit plays a short intro (`intro.html`: a 3D Mars globe from NASA maps, HiRISE and Curiosity images, the 30 s demo); `index.html?hub` skips it. Image credits: `demo/twin/intro/CREDITS.md`. The twin is `twin.html` and mission control is
 `mission.html`. The first load is a little over 100 MB; the walk view needs a GPU.
 
 ## Repository layout
