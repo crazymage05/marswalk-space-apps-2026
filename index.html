@@ -8,6 +8,8 @@
 <meta name="description" content="MARSWALK: a Mars EVA digital twin of Curiosity's 2025 boxwork campaign at Gale Crater.">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
+<script>/* first visit: play the intro film (intro.html). ?hub skips it; returning visitors (localStorage) go straight here. */
+(function () { try { if (!/[?&]hub(&|=|$)/.test(location.search) && !localStorage.getItem("mw_intro_seen")) location.replace("intro.html"); } catch (e) {} })();</script>
 <style>
 :root {   /* page names mapped onto the shared design tokens (theme.css: Mars day / dusk) */
   --ground: var(--mw-bg); --panel: var(--mw-panel); --line: var(--mw-line); --fg: var(--mw-tx); --muted: var(--mw-mut);
@@ -140,6 +142,7 @@ th { font-family: var(--mw-sans); text-transform: none; letter-spacing: .01em; f
   <nav class="cta" aria-label="Main entry points">
     <a class="btn primary" href="twin.html">Walk the twin</a>
     <a class="btn secondary" href="mission.html">Mission control replay</a>
+    <a class="btn secondary" href="intro.html">Watch the intro</a>
   </nav>
 </div></header>
 

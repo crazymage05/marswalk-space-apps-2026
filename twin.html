@@ -25,7 +25,8 @@ h1 span { color: var(--dust); }
 .lede strong { color: var(--fg); font-weight: 600; }
 
 .console { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; }
-.console > .view { position: sticky; top: 12px; align-self: start; }   /* the map stays in view while the side panels scroll */
+.mapcol { display: grid; gap: 16px; align-content: start; min-width: 0; }   /* map, then the layer indicators and the context map below it */
+.below { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .view { position: relative; min-width: 0; height: min(74vh, 780px); min-height: 420px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
   background: linear-gradient(180deg, #2a1c15 0%, #5a3a28 48%, var(--haze) 100%); }
 .view canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
@@ -48,6 +49,8 @@ h1 span { color: var(--dust); }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); color: var(--fg); background: rgba(22,17,13,0.5); }
 
 .rail { display: grid; gap: 12px; align-content: start; min-width: 0; }
+/* desktop: the controls panel is as tall as the map and scrolls inside, so the map and its controls stay on screen together */
+@media (min-width: 901px) { .console > .rail { max-height: min(74vh, 780px); min-height: 420px; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; } }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
 .card h2 { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; margin: 0; color: var(--dust); }
 .toggles { display: grid; gap: 6px; }
@@ -99,6 +102,7 @@ td.state { font-family: var(--mono); font-size: 11px; white-space: nowrap; }
 
 @media (max-width: 900px) {
   .console { grid-template-columns: minmax(0, 1fr); }
+  .mapcol { display: contents; } .mapcol > .view { order: 1; } .console > .rail { order: 2; } .mapcol > .below { order: 3; grid-template-columns: minmax(0, 1fr); }
   .console > .view { position: relative; top: auto; }
   .view { height: 60vh; min-height: 360px; }
   .evidence { grid-template-columns: minmax(0, 1fr); }
@@ -220,6 +224,7 @@ details.prefs summary { font-family: var(--mw-sans); font-size: 12.5px; font-wei
   <p id="liveLine" aria-live="polite">Live data: none received yet</p>
 
   <section class="console">
+    <div class="mapcol">
     <div class="view" id="view">
       <div class="hud">
         <span class="chip">Vertical &times;<i id="exLbl">1.5</i></span>
@@ -277,8 +282,7 @@ details.prefs summary { font-family: var(--mw-sans); font-size: 12.5px; font-wei
         </div>
       </div>
     </div>
-
-    <aside class="rail">
+    <div class="below">
       <div class="card">
         <h2>Layers</h2>
         <div class="toggles">
@@ -306,7 +310,10 @@ details.prefs summary { font-family: var(--mw-sans); font-size: 12.5px; font-wei
         <p class="status" id="ctxCap"></p>
         <p class="status"><a id="trekLink" href="https://trek.nasa.gov/mars/" target="_blank" rel="noopener">Open this spot in Mars Trek</a> &middot; <a href="https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars" target="_blank" rel="noopener">USGS Mars geologic maps</a></p>
       </div>
+    </div>
+    </div>
 
+    <aside class="rail">
       <div class="card">
         <h2>Plan a walk</h2>
         <div class="row"><label for="maxSlope">Steepest slope allowed</label><output id="msOut">25&deg;</output></div>
@@ -2285,7 +2292,19 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
     c.fillStyle = tint; c.fillRect(0, 0, w, h * 0.35);
   }
   const hhmm = h => { h = ((h % 24) + 24) % 24; return String(Math.floor(h)).padStart(2, "0") + ":" + String(Math.floor((h % 1) * 60)).padStart(2, "0"); };
+  // Adaptive resolution for the walk (the walk is GPU fill-bound: on a laptop GPU at 1440x900 it ran 17 fps at full scale and
+  // 42 fps at half scale). Once a second: below ~38 fps lower the render scale one step (down to 0.55 of the device pixel
+  // ratio); at the floor and still slow, turn shadows off; above ~57 fps raise it again. Fast GPUs stay at full quality.
+  const DYN = { base: Math.min(devicePixelRatio, 2), scale: 1, n: 0, t: 0, shadowsCut: false, steps: [1, 0.85, 0.72, 0.62, 0.55] };
+  WK.dyn = DYN;
+  DYN.tick = dt => { DYN.n++; DYN.t += dt; if (DYN.t < 1.0) return; const fps = DYN.n / DYN.t; DYN.n = 0; DYN.t = 0; DYN.fps = fps;
+    let i = DYN.steps.indexOf(DYN.scale);
+    if (fps < 38) { if (i < DYN.steps.length - 1) i++; else if (!DYN.shadowsCut) { DYN.shadowsCut = true; renderer.shadowMap.enabled = false; renderer.shadowMap.needsUpdate = true; } }
+    else if (fps > 57 && i > 0) i--;
+    if (DYN.steps[i] !== DYN.scale) { DYN.scale = DYN.steps[i]; renderer.setPixelRatio(DYN.base * DYN.scale); } };
+  DYN.reset = () => { DYN.scale = 1; DYN.n = 0; DYN.t = 0; renderer.setPixelRatio(DYN.base); if (DYN.shadowsCut) { DYN.shadowsCut = false; renderer.shadowMap.enabled = true; renderer.shadowMap.needsUpdate = true; } };
   WK.frame = function (dt) {
+    DYN.tick(dt);
     const sol = +$("sol").value, rate = nearest(D.rad, sol).uGy_h, total = cum[cum.length - 1];
     const sPrev = WK.s;
     if (WK.play && WK.s < total) {
@@ -2421,7 +2440,7 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
     $("wPlay").textContent = "Pause"; view.classList.add("walking"); $("walkHud").hidden = false; controls.enabled = false; renderer.outputEncoding = THREE.sRGBEncoding;
     WK.setTone(WK.tone); WK.on = true;
   }
-  function stopWalk() { if (document.fullscreenElement === view && document.exitFullscreen) document.exitFullscreen().catch(() => {}); WK.on = false; renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.NoToneMapping; view.classList.remove("walking"); $("walkHud").hidden = true; $("visor").hidden = true; controls.enabled = true;
+  function stopWalk() { if (document.fullscreenElement === view && document.exitFullscreen) document.exitFullscreen().catch(() => {}); WK.on = false; DYN.reset(); renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.NoToneMapping; view.classList.remove("walking"); $("walkHud").hidden = true; $("visor").hidden = true; controls.enabled = true;
     if (AU.ctx && AU.on) { AU.on = false; AU.ctx.suspend(); $("wSound").textContent = "Sound off"; $("wSound").setAttribute("aria-pressed", "false"); $("wSound").classList.remove("on"); } }
   // Full screen for the walk: requested inside the click (browsers allow it only from a user action), left on Back to map.
   const goFull = () => { if (document.fullscreenEnabled && !document.fullscreenElement && view.requestFullscreen) view.requestFullscreen().catch(() => {}); };
