@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <link rel="icon" href="data:,">
 <title>Boxwork Twin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
@@ -497,8 +498,8 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   const HZC = new Set();
   function hzRebuild() { HZC.clear(); const now = Date.now();
     for (const z of LIVE.zones) { if (z.end && Date.parse(z.end) < now) continue; const n = Math.ceil(z.rc) + 1, cx0 = Math.floor(z.x), cy0 = Math.floor(z.y);
-      for (let dy = -n; dy <= n; dy++) for (let dx = -n; dx <= n; dx++) { const cx = cx0 + dx, cy = cy0 + dy;
-        if (cx >= 0 && cy >= 0 && cx < W && cy < H && Math.hypot(cx - z.x, cy - z.y) <= Math.max(0.5, z.rc)) HZC.add(cy * W + cx); } } }
+      const xa = Math.max(0, cx0 - n), xb = Math.min(W - 1, cx0 + n), ya = Math.max(0, cy0 - n), yb = Math.min(H - 1, cy0 + n);   // only cells on the grid: a 300 km storm costs no more than the map
+      for (let cy = ya; cy <= yb; cy++) for (let cx = xa; cx <= xb; cx++) if (Math.hypot(cx - z.x, cy - z.y) <= Math.max(0.5, z.rc)) HZC.add(cy * W + cx); } }
 
   function drawTexture() {
     tctx.globalAlpha = 1; tctx.drawImage(photo, 0, 0);
@@ -649,10 +650,11 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     const p = pick(e); if (!p) return;
     if (p.photo != null) { selectPhoto(p.photo); return; }
     if (p.livePhoto != null) { showLive(p.livePhoto); return; }
-    if (CREW.parking && p.cell != null) { parkRover(p.cell); return; }
+    if (CREW.parking && p.cell != null) { e._mwPark = true; parkRover(p.cell); return; }
     if (e.shiftKey && p.cell != null) { toggleDest(p.cell); return; }
     lastBuild = null;
     if (startCell == null || endCell != null) { startCell = p.cell; endCell = null; route = null; $("tgtFrom").value = "start"; $("hint").textContent = "Now click where the walk should end."; clearStats(); drawTexture(); }
+    else if (p.cell === startCell) { $("hint").textContent = "That is the start point. Click a different spot for the end of the walk."; }
     else { endCell = p.cell; plan(); }
   });
 
@@ -702,7 +704,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     (function tick() { if (pend && !(window.__walk && window.__walk.on)) { const p = pick(pend); pend = null;
         if (p && p.cell != null && p.cell !== last) { last = p.cell; $("cellCard").innerHTML = cardHTML(p.cell); $("cellCard").hidden = false; $("cellCard").dataset.cell = p.cell; } }
       requestAnimationFrame(tick); })();
-    renderer.domElement.addEventListener("pointerup", e => { const p = pick(e); if (p && p.cell != null && ZS.ready && down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) <= 5 && !e.shiftKey && !CREW.parking && !(window.__walk && window.__walk.on)) openZone(ZS.zid[p.cell]);
+    renderer.domElement.addEventListener("pointerup", e => { const p = pick(e); if (p && p.cell != null && ZS.ready && down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) <= 5 && !e.shiftKey && !CREW.parking && !e._mwPark && !(window.__walk && window.__walk.on)) openZone(ZS.zid[p.cell]);
       if (p && p.cell != null) { last = p.cell; $("cellCard").innerHTML = cardHTML(p.cell); $("cellCard").hidden = false; $("cellCard").dataset.cell = p.cell; } });
     for (const id of ["maxSlope", "sol"]) $(id).addEventListener("input", () => { if (!$("cellCard").hidden) $("cellCard").innerHTML = cardHTML(+$("cellCard").dataset.cell); });
     window.__cardHTML = cardHTML; }
@@ -988,7 +990,8 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.45, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
     s.connect(lp).connect(g).connect(AU.master); s.start(t, Math.random()); s.stop(t + 0.2); };
   AU.update = (powerW, fatigue, walking) => { if (!AU.on || !AU.ctx) return; const c = AU.ctx, t = c.currentTime;
-    const effort = Math.min(1, Math.max(0, (walking ? powerW - 105 : 0) / 700))   // v2 gross metabolic: rest ~105 W, NASA walkback pace ~700 W, rate = 14 + 16 * effort + 6 * Math.min(1, fatigue * 5);
+    const effort = Math.min(1, Math.max(0, (walking ? powerW - 105 : 0) / 700));   // v2 gross metabolic: rest ~105 W, NASA walkback pace ~700 W
+    const rate = 14 + 16 * effort + 6 * Math.min(1, fatigue * 5);
     AU.rate = rate;
     if (t >= AU.nextBreath - 0.05) { const T = 60 / rate, d = 0.05 + 0.13 * effort + 0.04 * Math.min(1, fatigue * 5), t0 = Math.max(t, AU.nextBreath);
       AU.bg.gain.cancelScheduledValues(t0); AU.bg.gain.setValueAtTime(0.0001, t0);
@@ -1161,7 +1164,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     drawTexture(); if (route) updateSol(); }
   function parkRover(c) {
     CREW.parking = false; $("rvPark").textContent = "Park rover here"; $("rvPark").setAttribute("aria-pressed", "false");
-    if (!WC.layers || walkMask(effLim())[c]) { $("crewNote").className = "status warn"; $("crewNote").textContent = "The rover cannot be parked there: the astronaut may not walk on that cell (slope, roughness or data confidence). Pick another cell."; return; }
+    if (!WC.layers || walkMask(effLim())[c]) { $("crewNote").className = "status warn"; $("crewNote").textContent = "The rover cannot be parked there: the astronaut may not walk on that cell (slope, roughness or data confidence). Pick another cell."; $("hint").textContent = "Press Park rover here and pick a walkable cell, or click the terrain to start a new walk."; return; }
     CREW.rover = c; CREW.roverUser = true; $("hint").textContent = "Rover parked (modelled support). Click the terrain to start a new walk."; crewRefresh(); }
   $("carried").addEventListener("input", e => { SUIT.carried = +e.target.value; crewRefresh(); });
   $("crewPair").addEventListener("change", e => { CREW.pair = e.target.checked; crewRefresh(); });
@@ -1329,6 +1332,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   async function searchTargets(text, quiet) {
     const st = $("tgtStatus"); st.className = "status";
     let cr; try { cr = await loadCrism(); } catch (e) { st.className = "status warn"; st.textContent = "CRISM layer not available: " + e.message; return; }
+    if (!String(text || "").trim()) { st.className = "status warn"; st.textContent = "Type a word to search, e.g. water, iron, sulfur, clay or olivine."; return; }
     const ids = resolveGroups(text, cr.meta);
     if (!ids.length) { CAND.q = null; CAND.list = []; candPins.length = 0; renderCands(); drawTexture(); st.className = "status warn";
       st.textContent = `No mineral group matches "${text}". Try water, iron, sulfur, magnesium, aluminium, calcium, clay, silica, olivine or pyroxene.`; return; }

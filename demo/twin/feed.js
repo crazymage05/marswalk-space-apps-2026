@@ -138,7 +138,7 @@ function idb(mode, fn) {
 }
 function putAll(recs) { return idb('readwrite', function (st) { recs.forEach(function (r) { st.put(r); }); }); }
 function allRecs() { return idb('readonly', function (st) { return st.getAll(); }).then(function (a) { return a || []; }); }
-function clearUploads() { return idb('readwrite', function (st) { var q = st.openCursor(); q.onsuccess = function () { var c = q.result; if (c) { if (c.value.source === 'upload') c.delete(); c.continue(); } }; }); }
+function clearUploads() { return idb('readwrite', function (st) { var q = st.openCursor(); q.onsuccess = function () { var c = q.result; if (c) { if (c.value.source === 'upload' || c.value.source === 'hazard_watch') c.delete(); c.continue(); } }; }); }
 
 // ---------- messages
 function say(kind, text) {

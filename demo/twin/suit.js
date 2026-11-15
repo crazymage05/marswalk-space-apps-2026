@@ -72,6 +72,7 @@ function build() {
   main.parentNode.insertBefore(sec, main.nextSibling);
   ['gMars', 'gEarth', 'aMars', 'aEarth', 'sMt', 'sEt', 'sAge', 'sbar', 'spl', 'sNo', 'sAs', 'sLeak', 'sReset', 'sLeakInfo', 'sLoad', 'sLoadInfo'].forEach(function (k) { el[k] = document.getElementById(k); });
   el.sLoad.oninput = function () { var v = parseFloat(el.sLoad.value); LOAD_KG = isFinite(v) ? Math.min(80, Math.max(0, v)) : 0; TC = null; lastKey = null; render(); };
+  el.sLoad.onchange = function () { el.sLoad.value = LOAD_KG; };   // show the clamped value (0-80 kg) once editing ends
   el.sLeak.onclick = function () { LEAK_T0 = S[H.step].t_s; TC = null; el.sLeak.disabled = true; el.sReset.disabled = false; lastKey = null; render(); };
   el.sReset.onclick = function () { LEAK_T0 = null; TC = null; el.sLeak.disabled = false; el.sReset.disabled = true; lastKey = null; render(); };
 }

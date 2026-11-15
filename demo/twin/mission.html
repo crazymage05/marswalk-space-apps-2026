@@ -252,7 +252,7 @@ let drag=null;
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing'});
 cv.addEventListener('pointermove',e=>{if(!drag)return;view.x=drag.vx+e.clientX-drag.x;view.y=drag.vy+e.clientY-drag.y;draw()});
 cv.addEventListener('pointerup',()=>{drag=null;cv.style.cursor='grab'});
-function zoom(f,cx,cy){cx=cx??W/2;cy=cy??H/2;view.x=cx-(cx-view.x)*f;view.y=cy-(cy-view.y)*f;view.k*=f;draw()}
+function zoom(f,cx,cy){const kf=Math.min(W/585,H/732),nk=Math.max(0.5*kf,Math.min(40*kf,view.k*f));f=nk/view.k;cx=cx??W/2;cy=cy??H/2;view.x=cx-(cx-view.x)*f;view.y=cy-(cy-view.y)*f;view.k*=f;draw()}
 cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoom(e.deltaY<0?1.2:1/1.2,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 $('zin').onclick=()=>zoom(1.3);$('zout').onclick=()=>zoom(1/1.3);$('fit').onclick=fit;
 // ---- control
