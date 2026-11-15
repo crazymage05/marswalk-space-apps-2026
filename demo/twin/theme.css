@@ -43,3 +43,11 @@ html, body { background: var(--mw-bg); color: var(--mw-tx); -webkit-font-smoothi
 .mw-pill-primary { background: var(--mw-deep) !important; color: var(--mw-ondeep) !important; border-color: transparent !important; }
 :focus-visible { outline: 2px solid var(--mw-accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation-duration: .01ms !important; } }
+
+/* Texture (15 Nov): real 10 m elevation contours of the study area (HiRISE DTM, contours.svg, heavier every 50 m) and a fine
+   dust grain behind every page header; softer layered shadows on panels. Decoration only, behind text, no effect on contrast. */
+:root { --mw-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --mw-shadow: 0 1px 2px rgba(43, 26, 20, .05), 0 8px 24px -14px rgba(43, 26, 20, .20), 0 22px 44px -28px rgba(43, 26, 20, .16); }
+.mw-sky { background-image: var(--mw-grain), url("contours.svg"), radial-gradient(60% 140% at 22% 0%, var(--mw-glow), transparent 70%), linear-gradient(180deg, var(--mw-sky0), var(--mw-sky1) 55%, var(--mw-sky2));
+  background-size: 160px 160px, 900px auto, auto, auto; background-position: 0 0, 70% 38%, 0 0, 0 0; background-repeat: repeat, no-repeat, no-repeat, no-repeat; }
+:root[data-theme="dusk"] .mw-sky { background-blend-mode: soft-light, screen, normal, normal; }

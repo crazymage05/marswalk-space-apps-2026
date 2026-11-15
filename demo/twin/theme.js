@@ -1,12 +1,12 @@
 /* MARSWALK shared theme switch (index.html, twin.html, mission.html). Load it in <head> before the page's styles render.
-   Theme = the viewer's saved choice, else the system setting; "day" (light) or "dusk" (dark). Any button with
+   Theme = the viewer's saved choice, else "day"; "day" (light) or "dusk" (dark). Any button with
    [data-theme-toggle] switches it; the choice is remembered per browser (localStorage, wrapped: it may be blocked).
    Pages that redraw canvases can listen for the "mw-theme" event on window. */
 (function () {
   "use strict";
   var KEY = "mw_theme", root = document.documentElement, t = null;
   try { t = localStorage.getItem(KEY); } catch (e) {}
-  if (t !== "day" && t !== "dusk") t = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dusk" : "day";
+  if (t !== "day" && t !== "dusk") t = "day";   // default: Mars day (light) for everyone; the Dusk button switches and is remembered
   root.dataset.theme = t;
   function sync() {
     var dusk = root.dataset.theme === "dusk";
