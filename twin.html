@@ -30,6 +30,9 @@ h1 span { color: var(--dust); }
 .view { position: relative; min-width: 0; height: min(74vh, 780px); min-height: 420px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
   background: linear-gradient(180deg, #2a1c15 0%, #5a3a28 48%, var(--haze) 100%); }
 .view canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+.walkfab { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); z-index: 6; font: 700 17px var(--sans, system-ui); padding: 13px 26px; border-radius: 999px; border: 0; cursor: pointer;
+  background: #f0a674; color: #1d120c; box-shadow: 0 10px 30px -8px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.25); }
+.walkfab:hover { filter: brightness(1.06); } .view.walking .walkfab { display: none; }
 .hud { position: absolute; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
 .hud .modeBtn { pointer-events: auto; cursor: pointer; color: var(--fg); font-weight: 400; }
 .hud .modeBtn:hover, .hud .modeBtn:focus-visible { border-color: var(--dust); }
@@ -207,6 +210,32 @@ details.prefs summary { font-family: var(--mw-sans); font-size: 12.5px; font-wei
 #liveLine { font-family: var(--mw-sans); font-size: 12px; color: var(--mw-mut); }
 .sw { box-shadow: inset 0 0 0 1px var(--mw-line); }   /* the white "photos" swatch stays visible on a light panel */
 #shareBtn { font: 500 12.5px var(--mw-sans) !important; border-radius: 999px !important; padding: 6px 14px !important; background: var(--mw-panel) !important; color: var(--mw-tx) !important; border: 1px solid var(--mw-line) !important; box-shadow: var(--mw-shadow); }
+
+/* Button polish (15 Nov): one solid primary per area, quiet secondaries, 10 px corners, no hover jump; styling only. */
+button { border-radius: 10px; min-height: 36px; padding: 7px 14px; font: 550 13px var(--mw-sans); letter-spacing: .005em;
+  background: var(--mw-panel); color: var(--mw-tx); border: 1px solid var(--mw-line); box-shadow: 0 1px 1px rgba(43,26,20,.04);
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .08s ease; }
+button:hover { transform: none; background: var(--mw-panel2); border-color: color-mix(in srgb, var(--mw-tx) 22%, transparent); }
+button:active { transform: scale(.98); }
+button:focus-visible { outline: 2px solid var(--mw-accent); outline-offset: 2px; }
+button.cta, button.on { background: var(--mw-accent); color: #fff; border-color: transparent; font-weight: 650; box-shadow: 0 1px 2px rgba(43,26,20,.18), inset 0 1px 0 rgba(255,255,255,.14); }
+button.cta:hover, button.on:hover { background: color-mix(in srgb, var(--mw-accent) 88%, #000); border-color: transparent; }
+:root[data-theme="dusk"] button.cta, :root[data-theme="dusk"] button.on { color: #1d120c; }
+button:disabled, button:disabled:hover, button.cta:disabled { opacity: .55; background: var(--mw-panel); color: var(--mw-tx); border-color: var(--mw-line); transform: none; cursor: default; box-shadow: none; }
+:root[data-theme="dusk"] .walkfab, :root[data-theme="dusk"] .view .walkfab { color: #1d120c; }
+:root[data-theme="dusk"] button:disabled, :root[data-theme="dusk"] button.cta:disabled { color: var(--mw-tx); background: var(--mw-panel); }
+#btnWalk { width: 100%; min-height: 44px; font-size: 14.5px; }
+.btns { gap: 8px; }
+.zcard .zbtns button { min-height: 34px; border-radius: 9px; font-size: 12.5px; }
+.zcard .zbtns #zoneGo { background: var(--mw-accent); color: #fff; border-color: transparent; }
+.view button { border-radius: 9px; min-height: 30px; padding: 5px 11px; font-size: 12px; box-shadow: none; }
+.view button:hover { background: var(--mw-glass-strong); border-color: var(--mw-glass-line); }
+.view button.on, .view button.cta { background: var(--mw-glass-fg); color: #1f1612; }
+.walkfab, .view .walkfab { min-height: 48px; padding: 0 26px; border-radius: 12px; font: 650 16px var(--mw-sans); background: var(--mw-accent); color: #fff;
+  box-shadow: 0 12px 32px -10px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.18); border: 0; }
+.walkfab:hover, .view .walkfab:hover { background: color-mix(in srgb, var(--mw-accent) 88%, #000); filter: none; border: 0; }
+.strip button, .strip button:hover { min-height: 0; padding: 0; box-shadow: none; background: none; }
+.chip2 button, .chip2 button:hover { min-height: 0; padding: 0 5px; box-shadow: none; background: none; border: 0; }
 </style>
 
 <div class="wrap">
@@ -226,6 +255,7 @@ details.prefs summary { font-family: var(--mw-sans); font-size: 12.5px; font-wei
   <section class="console">
     <div class="mapcol">
     <div class="view" id="view">
+      <button type="button" id="walkFab" class="walkfab" hidden>&#9654; Walk this route</button>
       <div class="hud">
         <span class="chip">Vertical &times;<i id="exLbl">1.5</i></span>
         <button type="button" class="chip modeBtn" id="mapMode" aria-pressed="true" title="Switch what a left-drag does: move the map or rotate it">Drag: move &middot; right-drag: rotate</button>
@@ -503,6 +533,10 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // fail rule HZ-1 in the validator, so a new observation changes the route, not just the picture. A zone with an end time
   // in the past no longer blocks. Cell (cx, cy) is inside when its centre is within the radius of the zone centre.
   const HZC = new Set();
+  // The 3D walk area: the 1 m terrain corridor of walk.json (planning-grid cells x0..x1, y0..y1). Outside it the walk view has no
+  // detailed ground, so targets, zone Start/End and the walk itself are kept inside it (3 cells inset). Set once walk.json loads.
+  const WA = { x0: 0, y0: 0, x1: 1e9, y1: 1e9, ok: false };
+  const inWalk = c => { const x = c % W, y = (c / W) | 0; return x >= WA.x0 && x <= WA.x1 && y >= WA.y0 && y <= WA.y1; };
   function hzRebuild() { HZC.clear(); const now = Date.now();
     for (const z of LIVE.zones) { if (z.end && Date.parse(z.end) < now) continue; const n = Math.ceil(z.rc) + 1, cx0 = Math.floor(z.x), cy0 = Math.floor(z.y);
       const xa = Math.max(0, cx0 - n), xb = Math.min(W - 1, cx0 + n), ya = Math.max(0, cy0 - n), yb = Math.min(H - 1, cy0 + n);   // only cells on the grid: a 300 km storm costs no more than the map
@@ -531,6 +565,8 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
           cells.forEach((i, k) => { const x = (i % W + 0.5) * sx, y = (Math.floor(i / W) + 0.5) * sy; k ? tctx.lineTo(x, y) : tctx.moveTo(x, y); }); tctx.stroke(); }
       }
     }
+    if (WA.ok) { tctx.save(); tctx.strokeStyle = "rgba(255,255,255,0.85)"; tctx.lineWidth = 5; tctx.setLineDash([22, 14]);
+      tctx.strokeRect(WA.x0 * sx, WA.y0 * sy, (WA.x1 - WA.x0) * sx, (WA.y1 - WA.y0) * sy); tctx.restore(); }
     for (const z of LIVE.zones) { const x = (z.x + 0.5) * sx, y = (z.y + 0.5) * sy, r = Math.max(8, z.rc * sx);
       tctx.save(); tctx.fillStyle = "rgba(229,86,60,0.22)"; tctx.beginPath(); tctx.arc(x, y, r, 0, 7); tctx.fill();
       tctx.strokeStyle = "#e5563c"; tctx.lineWidth = 4; tctx.setLineDash([14, 10]); tctx.beginPath(); tctx.arc(x, y, r, 0, 7); tctx.stroke(); tctx.restore();
@@ -891,6 +927,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // transform the walk uses to draw them: gx = M.ox + (col - 337) / 4, gy = M.oy + (row - 578) / 4 (walk.json corridor origin).
   const ROCK = { cells: new Set(), centres: [] };
   ROCK.ready = (async () => { try { const [M0, RJ0] = await Promise.all([fetch("walk.json").then(r => r.json()), fetch("rocks.json").then(r => r.json())]);
+    { const k = M0.cell_m / CELL; Object.assign(WA, { x0: M0.ox + 3, y0: M0.oy + 3, x1: M0.ox + M0.w * k - 4, y1: M0.oy + M0.h * k - 4, ok: true }); window.__walkArea = WA; }
     // A cell is blocked when its centre is within the boulder radius + half a cell diagonal + 0.3 m: then every straight or
     // diagonal step between open cell centres stays >= 0.3 m from the boulder edge (a step's points are within 0.71 cell of an end).
     // Boulders reach 7.6 m across here, so one blocked cell was not enough.
@@ -1351,7 +1388,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     let cum = 0, thr = 255; for (let v = 255; v >= 0; v--) { cum += hist[v]; thr = v; if (cum >= 0.02 * N) break; }
     const below = new Uint32Array(257); for (let v = 0; v < 256; v++) below[v + 1] = below[v] + hist[v];
     const pctOf = v => 100 * (below[v] + hist[v] / 2) / N;
-    const pool = []; for (let i = 0; i < N; i++) if (score[i] >= thr && SLOPE[i] <= maxS) {
+    const pool = []; for (let i = 0; i < N; i++) if (score[i] >= thr && SLOPE[i] <= maxS && inWalk(i)) {
       const cx = i % W, cy = (i / W) | 0; let s = 0, n = 0;
       for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const x = cx + dx, y = cy + dy; if (x >= 0 && y >= 0 && x < W && y < H) { s += score[y * W + x]; n++; } }
       pool.push({ c: i, q: score[i], m: s / n }); }
@@ -1483,7 +1520,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     const maxS = effLim(), m = zoneMask(maxS), rc = zoneReach(z), b = zoneBox(z), cx = (b.x0 + b.x1) / 2 - 0.5, cy = (b.y0 + b.y1) / 2 - 0.5;
     const ids = CAND.q && CAND.groups.length && CR ? CAND.groups.filter(id => CR.q[id]) : [];
     let best = null, bs = -1, bd = Infinity, any = false;
-    zoneCells(z, (i, c, r) => { if (!m[i] || !rc[i]) return; any = true;
+    zoneCells(z, (i, c, r) => { if (!m[i] || !rc[i] || !inWalk(i)) return; any = true;
       const d = Math.hypot(c - cx, r - cy); let sc = 0; for (const id of ids) sc = Math.max(sc, CR.q[id][i]);
       if (ids.length ? (sc > bs || (sc === bs && d < bd)) : d < bd) { best = i; bs = sc; bd = d; } });
     return any ? { c: best, byScore: ids.length > 0, score: bs } : null;
@@ -1530,7 +1567,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     h += row("Curiosity photos", String(S.photos), tag("measured", "measured"), "Navcam photos in the twin's photo strip whose rover position lies in the zone");
     h += row("Chemistry targets", S.chem == null ? "&ndash;" : String(S.chem), tag("measured", "measured"), "ChemCam and APXS targets (rover waypoint position) in the zone");
     h += `<div class="zbtns"><button type="button" id="zoneStartBtn" title="Start the walk at the walkable cell nearest this zone's centre">Start here</button><button type="button" id="zoneGo" ${t ? "" : "disabled"} title="Plan a walk from ${S.from} to ${t ? (t.byScore ? "the walkable cell with the strongest CRISM score" : "the walkable cell nearest the zone centre") : "this zone"}">End here</button><button type="button" id="zoneAdd" ${t ? "" : "disabled"}>Add as stop</button></div>`;
-    h += `<div class="note" id="zoneMsg">${ZN.msg || (t ? "" : "No reachable walkable cell here under the current limit.")}</div>`;
+    h += `<div class="note" id="zoneMsg">${ZN.msg || (t ? "" : "No reachable walkable cell of this zone inside the 3D walk area (dashed outline).")}</div>`;
     h += `<div class="note">${edge ? "Cut by the map edge. " : ""}200 m zones (${(200 / CELL).toFixed(1)} cells); A, B, C from the west, 1, 2, 3 from the north.</div>`;
     return h;
   }
@@ -1544,8 +1581,8 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   // "Start here": the walkable cell nearest the zone centre (not inside a live hazard zone) becomes the start; the end is chosen next
   function zoneSetStart() {
     const z = ZN.sel; if (z < 0) return; const m = zoneMask(effLim()), b = zoneBox(z), nm = window.MWZones.name(b.zc, b.zr), cx = (b.x0 + b.x1) / 2 - 0.5, cy = (b.y0 + b.y1) / 2 - 0.5;
-    let best = null, bd = Infinity; zoneCells(z, (i, c, r) => { if (!m[i] || HZC.has(i)) return; const d = Math.hypot(c - cx, r - cy); if (d < bd) { bd = d; best = i; } });
-    if (best == null) { ZN.msg = `No walkable cell in zone ${nm} under the current slope limit.`; zoneRender(); return; }
+    let best = null, bd = Infinity; zoneCells(z, (i, c, r) => { if (!m[i] || HZC.has(i) || !inWalk(i)) return; const d = Math.hypot(c - cx, r - cy); if (d < bd) { bd = d; best = i; } });
+    if (best == null) { ZN.msg = `No walkable cell of zone ${nm} lies inside the 3D walk area (dashed outline) under the current slope limit.`; zoneRender(); return; }
     startCell = best; endCell = null; route = null; lastBuild = null; MULTI = null; $("tgtFrom").value = "start"; clearStats(); drawTexture();
     $("status").className = "status"; $("status").textContent = `Start set in zone ${nm} (row ${(best / W) | 0}, col ${best % W}).`;
     $("hint").textContent = "Now click where the walk should end, or open another zone and press End here.";
@@ -1582,10 +1619,10 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     window.__zoneDraw = function () {
       const Zn = window.MWZones, walking = !!(window.__walk && window.__walk.on), show = L.zones && Zn && Zn.ready && !walking, hz = !walking && LIVE.zones.length;
       const cw = view.clientWidth, ch = view.clientHeight, e = camera.matrixWorld.elements;
-      const k = show || hz ? LIVE.zones.length + "|" + cw + "x" + ch + "|" + EX + "|" + ZN.sel + "|" + e[12].toFixed(1) + e[13].toFixed(1) + e[14].toFixed(1) + e[0].toFixed(4) + e[2].toFixed(4) + e[4].toFixed(4) + e[6].toFixed(4) + e[8].toFixed(4) + e[10].toFixed(4) : "off";
+      const k = show || hz || WA.ok ? LIVE.zones.length + "|" + cw + "x" + ch + "|" + EX + "|" + ZN.sel + "|" + e[12].toFixed(1) + e[13].toFixed(1) + e[14].toFixed(1) + e[0].toFixed(4) + e[2].toFixed(4) + e[4].toFixed(4) + e[6].toFixed(4) + e[8].toFixed(4) + e[10].toFixed(4) : "off";
       if (k === key) return; key = k;
       const dpr = Math.min(devicePixelRatio, 2); if (zcv.width !== Math.round(cw * dpr) || zcv.height !== Math.round(ch * dpr)) { zcv.width = Math.round(cw * dpr); zcv.height = Math.round(ch * dpr); }
-      zx.setTransform(dpr, 0, 0, dpr, 0, 0); zx.clearRect(0, 0, cw, ch); if (!show && !hz) return;
+      zx.setTransform(dpr, 0, 0, dpr, 0, 0); zx.clearRect(0, 0, cw, ch); if (!show && !hz && !WA.ok) return;
       zx.textBaseline = "middle"; zx.textAlign = "center"; zx.lineJoin = "round";
       const proj = (gx, gy) => { const [x, z] = toWorld(gx, gy); v3.set(x, hAt(gx, gy) + 8, z).project(camera); return v3.z < 1 && v3.z > -1 ? [(v3.x + 1) / 2 * cw, (1 - v3.y) / 2 * ch] : null; };
       if (show) for (let zr = 0; zr < Zn.rows; zr++) for (let zc = 0; zc < Zn.cols; zc++) {
@@ -1595,6 +1632,8 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
         zx.font = `700 ${fs}px "IBM Plex Mono", ui-monospace, Consolas, monospace`;
         zx.strokeStyle = "rgba(12,8,5,0.85)"; zx.lineWidth = 3.2; zx.strokeText(txt, p[0], p[1]);
         zx.fillStyle = sel ? "#6fd8ea" : "rgba(255,244,225,0.88)"; zx.fillText(txt, p[0], p[1]); }
+      if (WA.ok) { const p = proj(WA.x0 + 2, WA.y0 + 2); if (p) { zx.font = '700 12px "IBM Plex Sans", system-ui, sans-serif'; zx.textAlign = "left"; zx.strokeStyle = "rgba(12,8,5,0.9)"; zx.lineWidth = 3.5;
+        zx.strokeText("3D walk area", p[0] + 4, p[1] + 10); zx.fillStyle = "#ffffff"; zx.fillText("3D walk area", p[0] + 4, p[1] + 10); zx.textAlign = "center"; } }
       for (const z of LIVE.zones) { const p = proj(z.x, z.y); if (!p) continue; const txt = `${HZ_NAME[z.kind] || z.kind} (${z.label})`;   // live hazard zones
         zx.font = '700 13px "IBM Plex Sans", system-ui, sans-serif'; zx.strokeStyle = "rgba(12,8,5,0.9)"; zx.lineWidth = 3.5; zx.strokeText(txt, p[0], p[1] - 18);
         zx.fillStyle = "#ffb4a6"; zx.fillText(txt, p[0], p[1] - 18); }
@@ -2449,6 +2488,7 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
   WK.setTone = m => { WK.tone = m; WK.exposure = WK.expo[m]; renderer.toneMapping = m === "agx" ? THREE.CustomToneMapping : THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = WK.exposure * (WK.adapt || 1); };
   async function startWalk() {
     if (!route) { $("status").className = "status warn"; $("status").textContent = "Plan a route first: click a start and an end on the terrain."; return; }
+    if (WA.ok && !route.every(inWalk)) { $("status").className = "status warn"; $("status").textContent = "This route leaves the 3D walk area (the dashed outline, where the 1 m terrain is). Plan a start and end inside it to walk it."; return; }
     if (!WK.built) await buildWalk();
     buildPath(); WK.setRoute(); Object.assign(WK, { s: 0, simSec: 0, play: true, baseYaw: null, yawOff: 0, pitch: -0.1 });
     if (WK.clearPrints) WK.clearPrints(); if (WK.gait) WK.gait.yaw = null;
@@ -2464,7 +2504,9 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
   document.addEventListener("fullscreenchange", () => { $("wFull").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"; });
   $("wScans").onclick = () => WK.toggleScans && WK.toggleScans(!WK.scansOn);
   $("wFull").onclick = () => document.fullscreenElement ? leaveFull() : goFull();
-  $("btnWalk").onclick = () => { if (route) goFull(); return startWalk().catch(e => { $("loading").hidden = false; $("loading").textContent = "Walk mode failed to load: " + e.message; }); };
+  $("walkFab").onclick = () => $("btnWalk").click();
+  (function fabTick() { const f = $("walkFab"), on = !!route && !(window.__walk && window.__walk.on); if (f.hidden === on) f.hidden = !on; requestAnimationFrame(fabTick); })();
+  $("btnWalk").onclick = () => { if (route && (!WA.ok || route.every(inWalk))) goFull(); return startWalk().catch(e => { $("loading").hidden = false; $("loading").textContent = "Walk mode failed to load: " + e.message; }); };
   $("wExit").onclick = () => { leaveFull(); stopWalk(); };
   $("wSound").onclick = () => { if (!AU.ctx) audioInit(); AU.on = !AU.on; if (AU.on) AU.ctx.resume(); else AU.ctx.suspend();
     $("wSound").textContent = AU.on ? "Sound on" : "Sound off"; $("wSound").setAttribute("aria-pressed", String(AU.on)); $("wSound").classList.toggle("on", AU.on); };
