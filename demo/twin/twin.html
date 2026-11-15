@@ -1529,7 +1529,7 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
     h += `<div class="note">${S.reachN ? `${(100 * S.reachN / Math.max(1, S.walkN)).toFixed(0)} % of its walkable cells connect to ` : "No walkable cell connects to "}${S.from}.</div>`;
     h += row("Curiosity photos", String(S.photos), tag("measured", "measured"), "Navcam photos in the twin's photo strip whose rover position lies in the zone");
     h += row("Chemistry targets", S.chem == null ? "&ndash;" : String(S.chem), tag("measured", "measured"), "ChemCam and APXS targets (rover waypoint position) in the zone");
-    h += `<div class="zbtns"><button type="button" id="zoneGo" ${t ? "" : "disabled"} title="Plan a walk from ${S.from} to ${t ? (t.byScore ? "the walkable cell with the strongest CRISM score" : "the walkable cell nearest the zone centre") : "this zone"}">Go here</button><button type="button" id="zoneAdd" ${t ? "" : "disabled"}>Add as stop</button></div>`;
+    h += `<div class="zbtns"><button type="button" id="zoneStartBtn" title="Start the walk at the walkable cell nearest this zone's centre">Start here</button><button type="button" id="zoneGo" ${t ? "" : "disabled"} title="Plan a walk from ${S.from} to ${t ? (t.byScore ? "the walkable cell with the strongest CRISM score" : "the walkable cell nearest the zone centre") : "this zone"}">End here</button><button type="button" id="zoneAdd" ${t ? "" : "disabled"}>Add as stop</button></div>`;
     h += `<div class="note" id="zoneMsg">${ZN.msg || (t ? "" : "No reachable walkable cell here under the current limit.")}</div>`;
     h += `<div class="note">${edge ? "Cut by the map edge. " : ""}200 m zones (${(200 / CELL).toFixed(1)} cells); A, B, C from the west, 1, 2, 3 from the north.</div>`;
     return h;
@@ -1540,12 +1540,22 @@ window.MWTwin = window.MWTwin || { _q: [], ingest(r) { this._q.push(r); return {
   }
   function zoneRender() { if (ZN.sel < 0 || !ZS.ready || $("zoneCard").hidden) return; $("zoneCard").innerHTML = zoneCardHTML(ZN.sel);
     $("zoneClose").onclick = () => { $("zoneCard").hidden = true; ZN.sel = -1; drawTexture(); };
-    $("zoneGo").onclick = zoneGo; $("zoneAdd").onclick = zoneAdd; }
+    $("zoneGo").onclick = zoneGo; $("zoneAdd").onclick = zoneAdd; $("zoneStartBtn").onclick = zoneSetStart; }
+  // "Start here": the walkable cell nearest the zone centre (not inside a live hazard zone) becomes the start; the end is chosen next
+  function zoneSetStart() {
+    const z = ZN.sel; if (z < 0) return; const m = zoneMask(effLim()), b = zoneBox(z), nm = window.MWZones.name(b.zc, b.zr), cx = (b.x0 + b.x1) / 2 - 0.5, cy = (b.y0 + b.y1) / 2 - 0.5;
+    let best = null, bd = Infinity; zoneCells(z, (i, c, r) => { if (!m[i] || HZC.has(i)) return; const d = Math.hypot(c - cx, r - cy); if (d < bd) { bd = d; best = i; } });
+    if (best == null) { ZN.msg = `No walkable cell in zone ${nm} under the current slope limit.`; zoneRender(); return; }
+    startCell = best; endCell = null; route = null; lastBuild = null; MULTI = null; $("tgtFrom").value = "start"; clearStats(); drawTexture();
+    $("status").className = "status"; $("status").textContent = `Start set in zone ${nm} (row ${(best / W) | 0}, col ${best % W}).`;
+    $("hint").textContent = "Now click where the walk should end, or open another zone and press End here.";
+    ZN.msg = `Start set here. Pick the end: click the map, or open another zone and press End here.`; zoneRender();
+  }
   function zoneGo() {
     const t = zoneTarget(ZN.sel); if (!t) return;
     const b = zoneBox(ZN.sel), nm = window.MWZones.name(b.zc, b.zr);
     startCell = zoneStart(ZN.sel).c; endCell = t.c; lastBuild = null; MULTI = null; $("tgtFrom").value = "start"; ZN.msg = "";
-    plan(); $("status").textContent += ` Go here: zone ${nm}, ${t.byScore ? "strongest CRISM cell" : "cell nearest the zone centre"} (row ${(t.c / W) | 0}, col ${t.c % W}).`;
+    plan(); $("status").textContent += ` End here: zone ${nm}, ${t.byScore ? "strongest CRISM cell" : "cell nearest the zone centre"} (row ${(t.c / W) | 0}, col ${t.c % W}).`;
     ZN.msg = route ? `Route planned to zone ${nm}.` : `No route to zone ${nm} under this limit.`; zoneRender();
   }
   function zoneAdd() {

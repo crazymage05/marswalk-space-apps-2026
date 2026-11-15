@@ -19,7 +19,8 @@ Guide: Martian Map" ([challenge text](docs/challenge.md)).
 - **Find the science.** Search "water", "iron", "clay" and similar words: 11 CRISM mineral groups, ranked within the area,
   shown as numbered targets you can route to.
 - **Zones.** The area is split into 200 m zones (A-L by 1-15). Tap one for its summary (walkable share, slopes, boulders,
-  minerals, geologic unit, dose, reachable or not) and press "Go here". Crew and mission control use the same names.
+  minerals, geologic unit, dose, reachable or not), then press "Start here" or "End here" to plan between zones without typing
+  coordinates. Crew and mission control use the same names.
 - **Walk it.** First person or follow view, Mars gravity and gait, suit model in the visor HUD (time, energy, dose,
   return margin), Curiosity's own photos and 3D scans where it stood.
 - **Crew and support.** Carried load (Wickman and Luna 1995), two-person EVA and a rover as safe haven (NASA DRA 5.0).
@@ -86,6 +87,20 @@ Then open http://127.0.0.1:8765/index.html in desktop Chrome or Edge. A first vi
 
 Raw NASA data is not stored here (several GB). The fetch scripts in `tools/` and `phase2/` download it from the PDS and
 NASA services. The demo runs from the prebuilt files in `demo/twin/`.
+
+## How the route is chosen
+
+A* plans the route, and an independent validator checks every 4 m of it against the flight rules. A reinforcement-learning
+agent trained on the same human and suit limits is shown in the twin as a research comparison ("A* vs RL route"); it reaches
+the goal on 41% of 101 test routes (63% with a stochastic policy), so it does not draw the route.
+
+## Future work
+
+- Pick a start and resources by zone, listing only targets the suit can reach and return from, with resources present on
+  Mars but not at this site shown as unavailable.
+- Suit consumables (oxygen, CO2 removal, battery) as planning rules, with a suit specification card. They are modelled
+  today in mission control only.
+- Retrain the RL agent on the current astronaut model and boulder map, starting from A* demonstrations.
 
 ## Limits
 
