@@ -165,7 +165,8 @@
   }
  ],
  "summary": {
-  "passed": 10,
+  "passed": 15,
+  "measured": 1,
   "failed": 0,
   "not_run": 0
  }

@@ -231,6 +231,9 @@ function readSighting(n) {
   if (!isFinite(lat) && !isFinite(lon) && !isFinite(r) && !isFinite(t)) return null;
   if (!isFinite(lat) || !isFinite(lon) || !isFinite(r) || !isFinite(t)) return { bad: "Sighting " + n + " needs latitude, longitude, radius and a date." };
   if (Math.abs(lat) > 90) return { bad: "Latitude must be between -90 and 90." };
+  if (lon < -180 || lon > 360) return { bad: "Longitude must be between -180 and 360 (east positive)." };
+  if (!(r > 0) || r > 5000) return { bad: "Sighting " + n + ": radius must be above 0 and at most 5000 km." };
+  if (t < Date.UTC(1997, 0, 1) || t > Date.now() + 3600000) return { bad: "Sighting " + n + ": the date must be a past observation (1997 or later, not in the future)." };
   return { lat: lat, lon: lon, r: r, t: t };
 }
 function seasonText(ms) {
@@ -248,6 +251,7 @@ function compute() {
   if (b) {
     if (b.t <= a.t) { el.hwOut.innerHTML = '<span class="err">Sighting 2 must be later than sighting 1.</span>'; return; }
     var dd = gcKm(a, b), dtS = (b.t - a.t) / 1000, v = dd * 1000 / dtS, hd = bearing(a, b), tk = trackOf(a, b, GALE), d2 = gcKm(b, GALE);
+    if (!(v >= 0.1)) { el.hwOut.innerHTML = '<span class="err">No motion measured: the two sightings are at the same place, so no track or arrival time can be computed. Use one sighting for a stationary storm.</span>'; return; }
     o.push("Observed front motion " + dd.toFixed(0) + " km in " + fmtDur(dtS / 3600) + " = <b>" + v.toFixed(1) + " m/s</b> toward " + hd.toFixed(0) + " deg (" + compass(hd) + "). " + tag("simulated"));
     if (v > 40 || v < 1) o.push('<span class="err">Speed outside the 6-26 m/s of measured storms (Sanchez-Lavega et al. 2025); check the positions and dates.</span>');
     var rem = tk.at - gcKm(a, b), half = tk.xt <= b.r ? Math.sqrt(b.r * b.r - tk.xt * tk.xt) : 0;
