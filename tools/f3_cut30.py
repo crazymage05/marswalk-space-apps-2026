@@ -23,7 +23,7 @@ SEG = [(1, 480, 0), (501, 1100, 492), (1121, 1600, 1104), (1621, 2100, 1596)]
 
 # (kind, source, start, n_frames, title, subtitle). film: start = film frame number; live: start = seconds into the clip
 EDL = [
-    ("film", None, 1, 48, "MARSWALK", "A Mars walk planner built on NASA data"),
+    ("film", None, 1, 48, "REDWALK", "A Mars walk planner built on NASA data"),
     ("film", None, 240, 72, "Interplanetary Survival Guide: Martian Map", "Curiosity's 2025 boxwork campaign, Mount Sharp, Gale crater"),
     ("live", "entry", 0.3, 72, "Plan it. Check it. Walk it.", "Runs in any web browser"),
     ("live", "layers", 3.5, 84, "Seven kinds of NASA data on one map", "HiRISE · CRISM · THEMIS · Navcam · RAD · REMS · ChemCam"),
@@ -32,7 +32,7 @@ EDL = [
     ("live", "find", 5.5, 72, "Find water, plan the science", "Three CRISM targets, boulders avoided, back to start"),
     ("live", "mission_event", 1.5, 84, "Dust storm: the crew re-plans", "Earth's answer arrives 19 minutes later"),
     ("film", None, 1700, 72, "Real data, labelled honestly", "Every number marked measured, modelled or simulated"),
-    ("film", None, 2052, 48, "MARSWALK", "NASA PDS · JPL Mars Trek · USGS geologic map · Perseverance raw images · NASA Worldview"),
+    ("film", None, 2052, 48, "REDWALK", "NASA PDS · JPL Mars Trek · USGS geologic map · Perseverance raw images · NASA Worldview"),
 ]
 
 fdir = "C:/Windows/Fonts"

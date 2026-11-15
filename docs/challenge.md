@@ -3,7 +3,7 @@
 Source: https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/ (text pasted by the team on 2026-11-13; the site does not load from machine B because of a certificate error). Difficulty: Intermediate. Subjects: Human Exploration, Mars, Planets & Moons, Software, Space Exploration.
 
 ## Summary
-Create a layered, integrated view of a location or route on the Martian surface that pulls together data from multiple NASA science missions and could help a human explorer plan and carry out a successful Marswalk while conducting new and exciting science along the way.
+Create a layered, integrated view of a location or route on the Martian surface that pulls together data from multiple NASA science missions and could help a human explorer plan and carry out a successful Redwalk while conducting new and exciting science along the way.
 
 ## Objectives (quoted)
 - Create a map, tool, or interface a Mars astronaut could use during a surface exploration mission, using NASA data and tools.

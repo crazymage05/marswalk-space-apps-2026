@@ -19,14 +19,14 @@ The challenge's Resources tab lists: JPL Mars Trek; USGS-NASA Planetary Geologic
 - **Sites (JPL DSN Radio Astronomy User Guide, Table 1.1):** Goldstone 35.281 N, 116.779 W; Madrid 40.429 N, 4.250 W; Canberra 35.402 S, 148.982 E. Each image covers 6 by 4 degrees (about 540 by 440 km).
 - **Code:** `tools/feeds/gibs_dsn.py`. It uses one UTC date for all sites: the newest of the last four days for which GIBS already serves IMERG precipitation (GIBS returns a blank tile while a day is unpublished, so an all-dry day looks the same and falls back one day). Downloads and provenance go to `data/feeds/gibs_dsn/<UTC date>/`; thumbnails to `demo/twin/feed/gibs/`.
 - **Shown in:** mission control, card "Earth side: DSN ground stations (NASA Worldview/GIBS)": three thumbnails with date, layers, share of pixels with rain, and a Worldview deep link per site, built as `https://worldview.earthdata.nasa.gov/?v=<west>,<south>,<east>,<north>&l=IMERG_Precipitation_Rate,<true colour layer>,Coastlines_15m&t=<date>-T12%3A00%3A00Z`.
-- **Limits:** context only. Rain and cloud do degrade Ka- and X-band links, but MARSWALK does not compute link margins or attenuation. The "rain pixels" figure is the share of the box with any IMERG precipitation, not a rain rate at the antenna.
+- **Limits:** context only. Rain and cloud do degrade Ka- and X-band links, but REDWALK does not compute link margins or attenuation. The "rain pixels" figure is the share of the box with any IMERG precipitation, not a rain rate at the antenna.
 
 ## Curiosity route map and animation for lower Mount Sharp
 
 - **Source:** NASA Science, "Curiosity's Proposed Path up Mount Sharp" (PIA23179, 15 May 2019), credit NASA/JPL-Caltech/ESA/University of Arizona/JHUAPL/MSSS/USGS Astrogeology Science Center. Page: `https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/`. Flyover video: "Video: Fly over Mount Sharp on Mars", `https://www.jpl.nasa.gov/news/video-fly-over-mount-sharp-on-mars/` (also `https://mars.nasa.gov/news/8437/video-fly-over-mount-sharp-on-mars`).
 - **Downloaded:** the 1041 x 586 animated GIF (12 frames) and its first (route only) and last (annotated) frames, with provenance, in `data/nasa_route_map/`. The video is linked, not downloaded.
-- **Shown in:** `demo/twin/index.html`, section "NASA's own route map vs MARSWALK", beside a screenshot of the twin's planned route.
-- **Difference:** NASA's map labels the regions the science team wants to reach, at kilometre scale. MARSWALK plans a suited walk at 4 m cells and checks it against flight rules. The two cover the same mountain but not the same ground: NASA's map runs from the clay-bearing unit to Gediz Vallis, and the twin covers the later boxwork stretch.
+- **Shown in:** `demo/twin/index.html`, section "NASA's own route map vs REDWALK", beside a screenshot of the twin's planned route.
+- **Difference:** NASA's map labels the regions the science team wants to reach, at kilometre scale. REDWALK plans a suited walk at 4 m cells and checks it against flight rules. The two cover the same mountain but not the same ground: NASA's map runs from the clay-bearing unit to Gediz Vallis, and the twin covers the later boxwork stretch.
 - **Limits:** the map is a 2019 plan, not the route Curiosity actually drove.
 
 ## JPL Mars Trek

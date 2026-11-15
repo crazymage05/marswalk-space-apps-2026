@@ -30,7 +30,7 @@ def smooth_scroll(pg, to_y, ms=4000):
 
 
 def entry(pg):
-    pg.goto(f"{BASE}/index.html"); pg.wait_for_timeout(3000)
+    pg.goto(f"{BASE}/index.html?hub"); pg.wait_for_timeout(3000)
     h = pg.evaluate("() => document.body.scrollHeight")
     smooth_scroll(pg, h // 3, 4000); smooth_scroll(pg, 2 * h // 3, 4000); smooth_scroll(pg, 0, 3000)
 
@@ -61,9 +61,9 @@ def walk(pg):
 
 def layers(pg):                                   # 30 s demo 8-11.5 s: CRISM layer on, campaign route draws, GO verdict
     pg.goto(f"{BASE}/twin.html?notour"); loaded(pg); pg.wait_for_timeout(1500)
-    pg.click("#lyHyd"); pg.wait_for_timeout(2500); pg.click("#btnDemo")
+    pg.evaluate("document.getElementById('lyHyd').click()"); pg.wait_for_timeout(2500); pg.click("#btnDemo")
     pg.wait_for_function("!document.getElementById('verdict').hidden && !/Checking/.test(document.getElementById('verdict').textContent)", timeout=30000)
-    pg.wait_for_timeout(3000); pg.click("#lyHyd"); pg.wait_for_timeout(1500)
+    pg.wait_for_timeout(3000); pg.evaluate("document.getElementById('lyHyd').click()"); pg.wait_for_timeout(1500)
 
 
 def find(pg):                                     # 30 s demo: search "water", 3 destinations, return to start, plan

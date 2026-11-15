@@ -209,7 +209,7 @@
       "worldview": "https://worldview.earthdata.nasa.gov/?v=145.982,-37.402,151.982,-33.402&l=IMERG_Precipitation_Rate,VIIRS_NOAA21_CorrectedReflectance_TrueColor,Coastlines_15m&t=2026-11-12-T12%3A00%3A00Z"
      }
     ],
-    "note": "Imagery is context for the Earth end of the link; MARSWALK does not model link margins.",
+    "note": "Imagery is context for the Earth end of the link; REDWALK does not model link margins.",
     "site_coordinates_source": "JPL DSN Radio Astronomy User Guide 2021, Table 1.1"
    },
    "records_new": 0

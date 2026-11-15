@@ -1,4 +1,4 @@
-/* MARSWALK data feed panel for mission control. Plain JS, no libraries.
+/* REDWALK data feed panel for mission control. Plain JS, no libraries.
    Shows what the poller (tools/ingest.py -> feed.json) has fetched, how late each source is, and lets you upload
    data (RAD CSV, REMS CSV, Navcam image, JSON records) that is validated here, stored in IndexedDB
    "marswalk-feed"/"records" and broadcast on BroadcastChannel "marswalk-feed" so an open twin tab updates at once.
@@ -383,7 +383,7 @@ function dsnCard() {
   }).join('');
   return '<div class="xc" id="feDsn"><h3>Earth side: DSN ground stations (NASA Worldview/GIBS)</h3>' +
     '<div class="xg" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">' + figs + '</div>' +
-    '<p style="margin-top:8px">Mars-to-Earth links end at these three Deep Space Network complexes, and heavy cloud or rain at a site degrades high-frequency links. This is imagery for context on the Earth end of the link; MARSWALK does not model link margins. ' +
+    '<p style="margin-top:8px">Mars-to-Earth links end at these three Deep Space Network complexes, and heavy cloud or rain at a site degrades high-frequency links. This is imagery for context on the Earth end of the link; REDWALK does not model link margins. ' +
     'Imagery: NASA GIBS (the service behind <a href="https://worldview.earthdata.nasa.gov/" target="_blank" rel="noopener" style="color:var(--cyan)">NASA Worldview</a>), roughly 540 by 440 km around each site; site coordinates from the JPL DSN Radio Astronomy User Guide. ' +
     'Colored overlay: precipitation rate. Last fetched ' + esc(fmt(g.last_checked_utc)) + '.</p></div>';
 }

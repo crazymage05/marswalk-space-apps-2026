@@ -1,4 +1,4 @@
-/* MARSWALK suit view (NASA side). Plain JS, no libraries, no fetches.
+/* REDWALK suit view (NASA side). Plain JS, no libraries, no fetches.
    Reads the mission replay through the page hook window.__mission (log, step) and re-renders when the step changes.
    Everything here is derived from the log or labelled ASSUMED / SIMULATED. See docs/suit_view.md. */
 (function () {
@@ -13,7 +13,7 @@ var FLOOR_KPA = 24;          // ASSUMED pressure floor at which the regulator ho
 var VOL_M3 = 0.03;           // ASSUMED suit free gas volume (~30 L). No NASA value in the repo; stated plainly, not justified further.
 var T_K = 293;               // suit gas temperature, assumed
 var R_J = 8.314;             // J/mol/K
-var SU1_KPA = 25;            // SU-1 demo rule: pressure threshold (MARSWALK demo rule; phase4/safety_validator.py has no suit-pressure rule)
+var SU1_KPA = 25;            // SU-1 demo rule: pressure threshold (REDWALK demo rule; phase4/safety_validator.py has no suit-pressure rule)
 // Make-up flow: leak loses n_dot = (dP/dt) * V / (R T) mol/s; as L/min of O2 at 101.325 kPa and 293 K (molar volume R T / P)
 var MAKEUP_LMIN = LEAK_RATE * 1000 * VOL_M3 / (R_J * T_K) * (R_J * T_K / 101325) * 1000 * 60;
 var WALKBACK_S = 0;          // walk-back time for the SU-1 O2 rule: nominal round trip from the log plan (set in init)
@@ -172,7 +172,7 @@ function init() {
     '<b>Tags:</b> modelled = computed from the mission log (model v2 gross metabolic energy; O2 = energy / ' + KJ_PER_L_O2 + ' kJ per L, phase4/astronaut.py); assumed = our parameter, not a NASA value; SIMULATED = invented fault. No tile is measured: there is no real suit telemetry. ' +
     '<b>Assumed:</b> O2 capacity ' + CAP_L.toFixed(0) + ' L (tank sized for an ' + EVA_H + ' h EVA at the nominal level-walking rate, ' + NOM_W.toFixed(0) + ' W, the mean rate of this log); RQ ' + RQ + ' for CO2; nominal suit pressure ' + P0_KPA + ' kPa from the suited-walking tests in docs/astronaut_model.md; leak ' + LEAK_RATE + ' kPa/s, pressure floor ' + FLOOR_KPA + ' kPa, suit free volume ' + VOL_M3 + ' m3, gas at ' + T_K + ' K (ideal gas). Heat load is taken equal to metabolic power. Heart rate is left out: no cited relation in the repo. ' +
     '<b>Carried load (SIMULATED):</b> metabolic power and O2 used are multiplied by 1 + ' + K_MARS.toFixed(3) + ' x load / ' + BODY_KG + ' kg body mass, the Mars level-walking increment of Wickman &amp; Luna 1995 (unsuited, underwater, 1.2 m/s, tested to 80 % of body weight); the extra cost of climbing with the load is not added here (model: docs/astronaut_model.md). The tank stays sized for the unloaded log. ' +
-    '<b>Leak model (SIMULATED):</b> pressure falls at the leak rate to the floor and holds; the regulator makes up the loss from the O2 supply: make-up = leak rate x V / (R T) = ' + MAKEUP_LMIN.toFixed(2) + ' L/min of O2 (at 101.3 kPa, 293 K), added to O2 consumption. <b>SU-1 demo rule:</b> end EVA and walk back when suit pressure is below ' + SU1_KPA + ' kPa OR O2 time left at the current rate is below the walk-back time (' + (WALKBACK_S / 60).toFixed(0) + ' min, the nominal round trip), whichever comes first (MARSWALK demo rule; phase4/safety_validator.py has no suit-pressure rule). The alert and walk-back call are shown here only; the replayed log is unchanged.';
+    '<b>Leak model (SIMULATED):</b> pressure falls at the leak rate to the floor and holds; the regulator makes up the loss from the O2 supply: make-up = leak rate x V / (R T) = ' + MAKEUP_LMIN.toFixed(2) + ' L/min of O2 (at 101.3 kPa, 293 K), added to O2 consumption. <b>SU-1 demo rule:</b> end EVA and walk back when suit pressure is below ' + SU1_KPA + ' kPa OR O2 time left at the current rate is below the walk-back time (' + (WALKBACK_S / 60).toFixed(0) + ' min, the nominal round trip), whichever comes first (REDWALK demo rule; phase4/safety_validator.py has no suit-pressure rule). The alert and walk-back call are shown here only; the replayed log is unchanged.';
   function loop() { try { render(); } catch (err) { console.error(err); return; } requestAnimationFrame(loop); }
   loop();
 }
