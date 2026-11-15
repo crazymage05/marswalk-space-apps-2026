@@ -5,6 +5,7 @@ walk it in first person. It covers the ground Curiosity crossed during its 2025 
 crater (sols 4500-4799), rebuilt from NASA data. Entry for the NASA Space Apps Challenge 2026, "Interplanetary Survival
 Guide: Martian Map" ([challenge text](docs/challenge.md)).
 
+- **Live demo:** https://crazymage05.github.io/marswalk-space-apps-2026/ (desktop Chrome or Edge; first load about 130 MB)
 - **Demo video (29 s):** [media/marswalk_demo30.mp4](media/marswalk_demo30.mp4)
 - **Run the demo:** see [Run it](#run-it). It is a static web page; no server code, no accounts.
 
