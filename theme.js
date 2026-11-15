@@ -1,4 +1,4 @@
-/* MARSWALK shared theme switch (index.html, twin.html, mission.html). Load it in <head> before the page's styles render.
+/* REDWALK shared theme switch (index.html, twin.html, mission.html). Load it in <head> before the page's styles render.
    Theme = the viewer's saved choice, else "day"; "day" (light) or "dusk" (dark). Any button with
    [data-theme-toggle] switches it; the choice is remembered per browser (localStorage, wrapped: it may be blocked).
    Pages that redraw canvases can listen for the "mw-theme" event on window. */

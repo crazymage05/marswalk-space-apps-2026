@@ -230,7 +230,7 @@
       h += `<div class="mw-n">Segment ${di + 1} of ${A.segs.length} adds the most cost: +${A.dom.extra.toFixed(0)} over ${A.dom.len.toFixed(0)} m, mostly ${esc(termLbl(A.dom.dom, A.PW))} (${pct(A.dom.domVal / Math.max(A.dom.extra, 1e-9))} of its added cost).</div>`;
       h += `<label><input type="checkbox" id="mwHl" ${keepHl ? "checked" : ""}> Highlight this segment on the 3D route (orange)</label>`;
 
-      h += `<h4>Flight rules checked</h4><div class="mw-n">Page validator (window.__flight), equal to the Python validator on its 47-case test. MARSWALK's own rules, not NASA values. Daylight (CS-08) is not checked on this page.</div>`;
+      h += `<h4>Flight rules checked</h4><div class="mw-n">Page validator (window.__flight), equal to the Python validator on its 47-case test. REDWALK's own rules, not NASA values. Daylight (CS-08) is not checked on this page.</div>`;
       const F = A.flight, fr = f => f.rules_failed.map(r => `${r} ${esc(RULE[r] || "")}`).join("; ");
       if (F) {
         h += `<div class="mw-r"><span>Validator decision (same as the panel under the route stats)</span><b class="${F.decision === "GO" ? "mw-ok" : "mw-bad"}">${esc(F.decision)}${F.rule ? " " + esc(F.rule) : ""}</b></div>`;

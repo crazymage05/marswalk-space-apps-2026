@@ -1,4 +1,4 @@
-/* MARSWALK hazard watch (mission control). Plain JS, no libraries.
+/* REDWALK hazard watch (mission control). Plain JS, no libraries.
    1. Radiation: Mars-arrival predictions from feed.json (NASA DONKI WSA-ENLIL, label modelled) checked against the EVA window,
       with the published timing error beside each one. Skill check: data/processed/hazards/cme_skill.json, docs/hazard_watch.md.
    2. Dust: an operator tool. Someone who has seen a storm on an orbiter image (MRO MARCI) enters it; this page does great-circle
