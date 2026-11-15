@@ -1902,6 +1902,11 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
     const tw = TJ.tile_px[0] * TJ.pixel_m / M.cell_m, th = TJ.tile_px[1] * TJ.pixel_m / M.cell_m;   // tile size in 1 m pixels
     const tileMats = tiles.map(im => { const tt = new THREE.Texture(im); tt.encoding = THREE.sRGBEncoding; tt.needsUpdate = true; tt.anisotropy = ANI; tt.wrapS = tt.wrapT = THREE.ClampToEdgeWrapping;
       const m = new THREE.MeshStandardMaterial({ map: tt, roughness: 1, metalness: 0 }); m.onBeforeCompile = groundShader; return m; });
+    // Far terrain (beyond WK.nearR of the walker): same HiRISE drape and shape, plain lit material, no shadows. Detail is spent
+    // where the astronaut looks; the dust haze hides the change. On this laptop GPU it was the far ground, drawn with the full
+    // film shader and casting shadows out to the horizon, that held the walk at 17 fps.
+    const farMats = tileMats.map(m => new THREE.MeshLambertMaterial({ map: m.map }));
+    WK.nearR = 150;
     const buildGeo = (c, lod) => {
       const st = lod ? 4 : 1, ii = [], jj = [], skirt = lod ? 3 : 1.5;
       for (let i = c.i0; i < c.i1; i += st) ii.push(i); ii.push(c.i1);
@@ -1979,6 +1984,7 @@ normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz);
         if (c.useFine && !c.fine && budget > 0) { budget--; WK.shDirty = true; c.fine = new THREE.Mesh(buildGeo(c, 0), tileMats[c.tile]); c.fine.castShadow = c.fine.receiveShadow = true; terrain.add(c.fine); }
         if (!c.useFine && c.fine && d > 500) freeFine(c);
         const showFine = c.useFine && !!c.fine; c.coarse.visible = !showFine; if (c.fine) c.fine.visible = showFine; showFine ? nf++ : nc++;
+        if (!showFine) { const near = d < WK.nearR, m = near ? tileMats[c.tile] : farMats[c.tile]; if (c.coarse.material !== m) { c.coarse.material = m; c.coarse.castShadow = near; WK.shDirty = true; } }
         if (showFine && !c.rockDone) { c.rocks = mkRocks(c); c.rockDone = true; }
         if (showFine && !c.pebDone && d < 150) { c.pebs = mkPebs(c); c.pebDone = true; }
         if (c.rocks) c.rocks.visible = showFine && FR.intersectsBox(c.boxR);
