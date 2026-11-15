@@ -216,10 +216,10 @@ h2 { font-size: clamp(30px, 4.4vw, 62px); }
   $("vid").addEventListener("ended", function () { if (playing && beats[cur].dataset.auto === "video") go(cur + 1); });
   [].forEach.call(document.querySelectorAll("[data-answer]"), function (b) {
     b.onclick = function () { answered = true;
-      $("answerLine").textContent = b.dataset.answer === "yes" ? "Then you have seen it from far away. Let's go down to the ground." : "Few people have. Let's go and look.";
+      $("answerLine").textContent = b.dataset.answer === "yes" ? "Wow, you have! Quick recap, then we go down to the ground." : "Then get ready for the journey. Next stop: Gale crater.";
       go(1); };
   });
-  $("next").onclick = function () { if (cur === 0 && !answered) { answered = true; $("answerLine").textContent = "Let's go and look."; } go(cur + 1); };
+  $("next").onclick = function () { if (cur === 0 && !answered) { answered = true; $("answerLine").textContent = "Get ready for the journey."; } go(cur + 1); };
   $("prev").onclick = function () { go(cur - 1); };
   $("again").onclick = function () { answered = false; go(0); };
   $("play").onclick = function () { playing = !playing; t0 = performance.now(); this.textContent = playing ? "Pause" : "Play"; this.setAttribute("aria-pressed", String(playing)); };
